@@ -1,0 +1,16 @@
+PODS:
+  - MxNetworking (0.1.0)
+
+DEPENDENCIES:
+  - MxNetworking (from `../`)
+
+EXTERNAL SOURCES:
+  MxNetworking:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  MxNetworking: b6b02c30b2379e674d3c626d811d739c25164beb
+
+PODFILE CHECKSUM: e352f17fa5adbd3f7207947cda8f301e00c3ea03
+
+COCOAPODS: 1.11.3
