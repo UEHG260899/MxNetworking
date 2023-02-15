@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06A4B9DC3AF25F6B66FAD35F144D5506 /* ReplaceMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE2C4EF7D6B1712C48CD1D1CB4F48D /* ReplaceMe.swift */; };
 		25E2ACD290219D9EF5F75CA345A8922E /* MxNetworking-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 565BB6DC8E810E7CBE30686DCF85AD9B /* MxNetworking-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5DB1F84BA96B952D0AEA27164093D444 /* MxNetworking-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A8F62B56F4CDC4E6316B31FD2503B1 /* MxNetworking-dummy.m */; };
 		80D748584AA4771BC3981BCACA6A10C4 /* Pods-MxNetworking_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA3E5631827367F551E0D01C7B4BFFD /* Pods-MxNetworking_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		81DD2D2415892EA92BB6EE230BB2E153 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		85DFB33A57A6408DC73AF98C34B5D712 /* Pods-MxNetworking_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1237ED2F6B4A2EA98D149BB5CE1506 /* Pods-MxNetworking_Tests-dummy.m */; };
 		9AC814DA4CBD9410EE77D5332DF870B3 /* Pods-MxNetworking_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E0C3AC46ED4B495ADC58CB86832A0156 /* Pods-MxNetworking_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A4ECF795299D78A9004447ED /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF792299D78A9004447ED /* APIError.swift */; };
+		A4ECF796299D78A9004447ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF793299D78A9004447ED /* HTTPMethod.swift */; };
+		A4ECF797299D78A9004447ED /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF794299D78A9004447ED /* API.swift */; };
 		AF5A6266415A1CA7690C91EB85D85FD8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		BB75D3BFA42F4D782AD9B2E03B0C908F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		EDA3B1A7E818B71E396033E165F8A1CD /* Pods-MxNetworking_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A90886BA32E32173631F914EB884B82 /* Pods-MxNetworking_Example-dummy.m */; };
@@ -51,7 +53,6 @@
 		565BB6DC8E810E7CBE30686DCF85AD9B /* MxNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MxNetworking-umbrella.h"; sourceTree = "<group>"; };
 		59BF498DEF752516657D8B5DA381D3F5 /* Pods-MxNetworking_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MxNetworking_Example-frameworks.sh"; sourceTree = "<group>"; };
 		62E0D4A904FBA124989B334F34EC0492 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		66CE2C4EF7D6B1712C48CD1D1CB4F48D /* ReplaceMe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReplaceMe.swift; path = MxNetworking/Classes/ReplaceMe.swift; sourceTree = "<group>"; };
 		71470BC5CED02FC603AD62B94278B06E /* Pods-MxNetworking_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MxNetworking_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		743BD37574E7944108DF155F412BBFD5 /* Pods-MxNetworking_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MxNetworking_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -60,6 +61,9 @@
 		9BDA247AE385456B46D6FDBE2D7C7432 /* Pods-MxNetworking_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MxNetworking_Example.modulemap"; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DD412FD01125E79BA23D8EFCB275A83 /* MxNetworking-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MxNetworking-prefix.pch"; sourceTree = "<group>"; };
+		A4ECF792299D78A9004447ED /* APIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		A4ECF793299D78A9004447ED /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		A4ECF794299D78A9004447ED /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		BCFF7B2DFBC702629ECE9DC492831EB7 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C230513282862E9051E95E1CAF894402 /* Pods_MxNetworking_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MxNetworking_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBD1A45D91866943A3D30FCFF1CF42CD /* Pods-MxNetworking_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MxNetworking_Example.debug.xcconfig"; sourceTree = "<group>"; };
@@ -172,7 +176,7 @@
 		6BFD56DB0BF2B4DE092A815DAD5FFF0D /* MxNetworking */ = {
 			isa = PBXGroup;
 			children = (
-				66CE2C4EF7D6B1712C48CD1D1CB4F48D /* ReplaceMe.swift */,
+				A4ECF798299D78C4004447ED /* Networking */,
 				492CC1247AAA479B22FCF6DBD0658CFA /* Pod */,
 				37871D8949FBD975BEDD9EF54F4A1A79 /* Support Files */,
 			);
@@ -202,6 +206,16 @@
 				6BFD56DB0BF2B4DE092A815DAD5FFF0D /* MxNetworking */,
 			);
 			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		A4ECF798299D78C4004447ED /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				A4ECF794299D78A9004447ED /* API.swift */,
+				A4ECF792299D78A9004447ED /* APIError.swift */,
+				A4ECF793299D78A9004447ED /* HTTPMethod.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		CF1408CF629C7361332E53B88F7BD30C = {
@@ -319,7 +333,7 @@
 				LastUpgradeCheck = 1400;
 				TargetAttributes = {
 					7B81C23E7FE80D766B5E46C52390F3E4 = {
-						LastSwiftMigration = "";
+						LastSwiftMigration = 1400;
 					};
 				};
 			};
@@ -373,7 +387,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DB1F84BA96B952D0AEA27164093D444 /* MxNetworking-dummy.m in Sources */,
-				06A4B9DC3AF25F6B66FAD35F144D5506 /* ReplaceMe.swift in Sources */,
+				A4ECF795299D78A9004447ED /* APIError.swift in Sources */,
+				A4ECF797299D78A9004447ED /* API.swift in Sources */,
+				A4ECF796299D78A9004447ED /* HTTPMethod.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,6 +464,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3FA476ACB85A13CA23F5C43E5F64A531 /* MxNetworking.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -468,6 +485,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -608,6 +626,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3CBEDE4B6C6E2D3D9A25E7519B8620ED /* MxNetworking.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
