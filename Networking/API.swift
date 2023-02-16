@@ -20,6 +20,20 @@ public struct API {
         
         self.start(request, completion: completion)
     }
+    
+    
+    @available(iOS 15, *)
+    /// Makes a GET request to a certain endpoint using async sintax
+    /// - Parameters:
+    ///   - endpoint: The endpoint used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    /// - Returns: An object of the decoding type
+    public static func fetch<T: Decodable>(endpoint: EndpointType, decodingType: T.Type) async throws -> T {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        
+        return try await start(request)
+    }
 
     /// Makes a GET request to a certain url
     /// - Parameters:
@@ -31,6 +45,19 @@ public struct API {
         request.httpMethod = HTTPMethod.get.rawValue
         
         self.start(request, completion: completion)
+    }
+    
+    @available(iOS 15, *)
+    /// Makes a GET request to a certain url
+    /// - Parameters:
+    ///   - url: The url used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    /// - Returns: An object of the decoding type
+    public static func fetch<T: Decodable>(url: URL, decodingType: T.Type) async throws -> T {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        
+        return try await start(request)
     }
 
     /// Makes a POST request to a certain endpoint
@@ -52,6 +79,26 @@ public struct API {
         self.start(request, completion: completion)
     }
 
+    @available(iOS 15, *)
+    /// Makes a POST request to a certain endpoint
+    /// - Parameters:
+    ///   - endpoint: The endpoint used for the request
+    ///   - returnType: The data type of the expected response (Must conform to Decodable protocol)
+    ///   - body: The request body
+    ///   - headers:  Headers for the request, nil by default
+    /// - Returns: An object of the decoding type
+    public static func post<T: Decodable>(endpoint: EndpointType, returnType: T.Type, body: Encodable, headers: [String: String]? = nil) async throws -> T {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpBody = try? JSONEncoder().encode(body)
+        
+        if let headers = headers {
+            headers.forEach { request.setValue($0, forHTTPHeaderField: $1) }
+        }
+        
+        return try await start(request)
+    }
+
     /// Makes a POST request to a certain url
     /// - Parameters:
     ///   - url: The url used for the request
@@ -69,6 +116,26 @@ public struct API {
         }
         
         self.start(request, completion: completion)
+    }
+    
+    @available(iOS 15, *)
+    /// Makes a POST request to a certain url
+    /// - Parameters:
+    ///   - url: The url used for the request
+    ///   - returnType: The data type of the expected response (Must conform to Decodable protocol)
+    ///   - body: The request body
+    ///   - headers: Headers for the request, nil by default
+    /// - Returns: An object of the decoding type
+    public static func post<T: Decodable>(url: URL, returnType: T.Type, body: Encodable, headers: [String: String]? = nil) async throws -> T {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpBody = try? JSONEncoder().encode(body)
+        
+        if let headers = headers {
+            headers.forEach { request.setValue($0, forHTTPHeaderField: $1) }
+        }
+        
+        return try await start(request)
     }
 
     private static func start<T: Decodable>(_ request: URLRequest, completion: @escaping (Result<T, APIError>) -> Void) {
@@ -101,5 +168,24 @@ public struct API {
                 completion(.failure(.failedDeserialization(type: String(describing: T.self))))
             }
         }.resume()
+    }
+
+    private static func start<T: Decodable>(_ request: URLRequest) async throws -> T {
+        let (data, response) =  try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+        
+        guard 200...300 ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
+        
+        do {
+            let decodedData = try JSONDecoder().decode(T.self, from: data)
+            return decodedData
+        } catch {
+            throw APIError.failedDeserialization(type: String(describing: T.self))
+        }
     }
 }
