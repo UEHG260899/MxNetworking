@@ -29,8 +29,9 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '13.0'
+  s.swift_version = '5.0'
 
-  s.source_files = 'MxNetworking/**/*'
+  s.source_files = 'Networking/**/*.swift'
   
   # s.resource_bundles = {
   #   'MxNetworking' => ['MxNetworking/Assets/*.png']
