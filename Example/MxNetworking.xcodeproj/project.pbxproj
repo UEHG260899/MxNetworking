@@ -12,7 +12,10 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		A40D602229E2320E004134F0 /* MxNetworkerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40D602129E2320E004134F0 /* MxNetworkerTests.swift */; };
+		A40D602729E234A7004134F0 /* PokemonList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF79A299D7B00004447ED /* PokemonList.swift */; };
+		A40D602829E234AA004134F0 /* PokeApiEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF79C299D7B24004447ED /* PokeApiEndpoint.swift */; };
+		A40D602C29E23609004134F0 /* MockUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40D602A29E234C8004134F0 /* MockUrlSession.swift */; };
 		A43789B929DF38960017718A /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43789B829DF38960017718A /* DemoView.swift */; };
 		A43789BE29DF48F70017718A /* AlertProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43789BD29DF48F70017718A /* AlertProvider.swift */; };
 		A4B97E14299DB06E0027E8BD /* FakeStoreEnpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B97E13299DB06E0027E8BD /* FakeStoreEnpoint.swift */; };
@@ -46,10 +49,11 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* MxNetworking_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MxNetworking_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		918D637CF72844B15615CF64 /* MxNetworking.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = MxNetworking.podspec; path = ../MxNetworking.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		96A7542ACC360BA9DD29ABE5 /* Pods_MxNetworking_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MxNetworking_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C7C265D53D9480F429D17EE /* Pods-MxNetworking_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MxNetworking_Example.debug.xcconfig"; path = "Target Support Files/Pods-MxNetworking_Example/Pods-MxNetworking_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		A40D602129E2320E004134F0 /* MxNetworkerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MxNetworkerTests.swift; sourceTree = "<group>"; };
+		A40D602A29E234C8004134F0 /* MockUrlSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUrlSession.swift; sourceTree = "<group>"; };
 		A43789B829DF38960017718A /* DemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoView.swift; sourceTree = "<group>"; };
 		A43789BD29DF48F70017718A /* AlertProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertProvider.swift; sourceTree = "<group>"; };
 		A4B97E13299DB06E0027E8BD /* FakeStoreEnpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeStoreEnpoint.swift; sourceTree = "<group>"; };
@@ -129,7 +133,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
+				A40D602929E234BD004134F0 /* Mocks */,
+				A40D602029E231C8004134F0 /* Cases */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -151,6 +156,22 @@
 				EF494045585CFF0DFFA757F4 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		A40D602029E231C8004134F0 /* Cases */ = {
+			isa = PBXGroup;
+			children = (
+				A40D602129E2320E004134F0 /* MxNetworkerTests.swift */,
+			);
+			name = Cases;
+			sourceTree = "<group>";
+		};
+		A40D602929E234BD004134F0 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				A40D602A29E234C8004134F0 /* MockUrlSession.swift */,
+			);
+			name = Mocks;
 			sourceTree = "<group>";
 		};
 		A43789B729DF38750017718A /* Views */ = {
@@ -275,7 +296,7 @@
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = "";
+						LastSwiftMigration = 1420;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
 				};
@@ -404,7 +425,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				A40D602C29E23609004134F0 /* MockUrlSession.swift in Sources */,
+				A40D602229E2320E004134F0 /* MxNetworkerTests.swift in Sources */,
+				A40D602829E234AA004134F0 /* PokeApiEndpoint.swift in Sources */,
+				A40D602729E234A7004134F0 /* PokemonList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -583,6 +607,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2133E883D4DD030AA9C08EC1 /* Pods-MxNetworking_Tests.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -595,6 +620,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MxNetworking_Example.app/MxNetworking_Example";
@@ -605,6 +631,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F95EFA8BC7CC260FD985B5DA /* Pods-MxNetworking_Tests.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",

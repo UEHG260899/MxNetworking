@@ -11,7 +11,7 @@ public protocol EndpointType {
     var url: URL { get }
 }
 
-public enum APIError: Error {
+public enum APIError: Error, Equatable {
     /// Used when the network request returns an undisclosed error
     case unknown(description: String)
     /// Used when the response isn´t formed correctly

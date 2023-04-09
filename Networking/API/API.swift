@@ -123,3 +123,36 @@ public struct API {
         }
     }
 }
+
+
+public class MxNetworker {
+    let session: URLSessionProtocol
+    
+    /// Initializer for the MxNetworker class
+    /// - Parameter session: The **URLSession** object from which network requests will be made
+    public init(session: URLSessionProtocol) {
+        self.session = session
+    }
+
+    /// Makes a GET request to a certain endpoint
+    /// - Parameters:
+    ///   - endpoint: The endpoint used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    ///   - completion: Completion handler
+    public func fetch<T: Decodable>(endpoint: EndpointType, decodingType: T.Type, completion: @escaping (Result<T, APIError>) -> Void) {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = HTTPMethod.get.rawValue
+
+        session.dataTask(with: request) { _, response, error in
+            if let error {
+                completion(.failure(.unknown(description: "\(error)")))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidResponse(response: response)))
+                return
+            }
+        }.resume()
+    }
+}

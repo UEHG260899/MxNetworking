@@ -26,7 +26,6 @@ public extension API {
         self.start(request, completion: completion)
     }
 
-    @available(iOS 15, *)
     /// Makes a POST request to a certain endpoint
     /// - Parameters:
     ///   - endpoint: The endpoint used for the request
@@ -34,6 +33,7 @@ public extension API {
     ///   - body: The request body
     ///   - headers:  Headers for the request, nil by default
     /// - Returns: An object of the decoding type
+    @available(iOS 15, *)
     static func post(endpoint: EndpointType, body: Encodable, headers: [String: String]? = nil) async throws{
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = HTTPMethod.post.rawValue
@@ -64,13 +64,13 @@ public extension API {
         self.start(request, completion: completion)
     }
     
-    @available(iOS 15, *)
     /// Makes a POST request to a certain url
     /// - Parameters:
     ///   - url: The url used for the request
     ///   - body: The request body
     ///   - headers: Headers for the request, nil by default
     /// - Returns: An object of the decoding type
+    @available(iOS 15, *)
     static func post(url: URL, body: Encodable, headers: [String: String]? = nil) async throws {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.post.rawValue

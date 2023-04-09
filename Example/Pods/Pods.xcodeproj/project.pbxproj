@@ -14,6 +14,7 @@
 		85DFB33A57A6408DC73AF98C34B5D712 /* Pods-MxNetworking_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1237ED2F6B4A2EA98D149BB5CE1506 /* Pods-MxNetworking_Tests-dummy.m */; };
 		9AC814DA4CBD9410EE77D5332DF870B3 /* Pods-MxNetworking_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E0C3AC46ED4B495ADC58CB86832A0156 /* Pods-MxNetworking_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A43789B629DF353C0017718A /* API+PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43789B529DF353C0017718A /* API+PostRequests.swift */; };
+		A4468AB229E22D03000AB54E /* URLSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4468AB129E22D03000AB54E /* URLSessionProtocol.swift */; };
 		A4ECF795299D78A9004447ED /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF792299D78A9004447ED /* APIError.swift */; };
 		A4ECF796299D78A9004447ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF793299D78A9004447ED /* HTTPMethod.swift */; };
 		A4ECF797299D78A9004447ED /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF794299D78A9004447ED /* API.swift */; };
@@ -63,6 +64,7 @@
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DD412FD01125E79BA23D8EFCB275A83 /* MxNetworking-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MxNetworking-prefix.pch"; sourceTree = "<group>"; };
 		A43789B529DF353C0017718A /* API+PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "API+PostRequests.swift"; sourceTree = "<group>"; };
+		A4468AB129E22D03000AB54E /* URLSessionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionProtocol.swift; sourceTree = "<group>"; };
 		A4ECF792299D78A9004447ED /* APIError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		A4ECF793299D78A9004447ED /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		A4ECF794299D78A9004447ED /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
@@ -219,9 +221,26 @@
 			path = API;
 			sourceTree = "<group>";
 		};
+		A4468AAF29E22CD5000AB54E /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A4468AB029E22CDD000AB54E /* Extensions */,
+				A4468AB129E22D03000AB54E /* URLSessionProtocol.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		A4468AB029E22CDD000AB54E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		A4ECF798299D78C4004447ED /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				A4468AAF29E22CD5000AB54E /* Utils */,
 				A43789B429DF34FD0017718A /* API */,
 				A4ECF792299D78A9004447ED /* APIError.swift */,
 				A4ECF793299D78A9004447ED /* HTTPMethod.swift */,
@@ -397,6 +416,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4468AB229E22D03000AB54E /* URLSessionProtocol.swift in Sources */,
 				5DB1F84BA96B952D0AEA27164093D444 /* MxNetworking-dummy.m in Sources */,
 				A4ECF795299D78A9004447ED /* APIError.swift in Sources */,
 				A4ECF797299D78A9004447ED /* API.swift in Sources */,

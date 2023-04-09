@@ -36,6 +36,9 @@ class ViewController: UIViewController {
             demoView.asyncPostButton.addTarget(self, action: #selector(performAsyncPost), for: .touchUpInside)
         }
         configureTargets()
+        
+        let networker = MxNetworker(session: URLSession.shared)
+        networker.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self, completion: {_ in})
     }
 }
 
