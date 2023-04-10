@@ -198,8 +198,24 @@ public class MxNetworker {
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = HTTPMethod.get.rawValue
         
-        let (data, response) =  try await session.data(for: request)
+        return try await startAsyncFetchRequest(request, decodingType: decodingType)
+    }
 
+    /// Makes a GET request to a certain url
+    /// - Parameters:
+    ///   - url: The url used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    /// - Returns: An object of the decoding type
+    public func fetch<T: Decodable>(url: URL, decodingType: T.Type) async throws -> T {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.get.rawValue
+
+        return try await startAsyncFetchRequest(request, decodingType: decodingType)
+    }
+
+    private func startAsyncFetchRequest<T: Decodable>(_ request: URLRequest, decodingType: T.Type) async throws -> T {
+        let (data, response) = try await session.data(for: request)
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse(response: response)
         }
@@ -207,7 +223,7 @@ public class MxNetworker {
         guard 200...300 ~= httpResponse.statusCode else {
             throw APIError.requestFailed(errorCode: httpResponse.statusCode)
         }
-        
+
         do {
             let decodedData = try JSONDecoder().decode(decodingType, from: data)
             return decodedData
