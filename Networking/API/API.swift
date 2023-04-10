@@ -143,6 +143,22 @@ public class MxNetworker {
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = HTTPMethod.get.rawValue
 
+        startFetchRequest(request: request, decodingType: decodingType, completion: completion)
+    }
+
+    /// Makes a GET request to a certain url
+    /// - Parameters:
+    ///   - url: The url used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    ///   - completion: Completion handler
+    public func fetch<T: Decodable>(url: URL, decodingType: T.Type, completion: @escaping (Result<T, APIError>) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        
+        startFetchRequest(request: request, decodingType: decodingType, completion: completion)
+    }
+
+    private func startFetchRequest<T: Decodable>(request: URLRequest, decodingType: T.Type, completion: @escaping (Result<T, APIError>) -> Void) {
         session.dataTask(with: request) { data, response, error in
             if let error {
                 completion(.failure(.unknown(description: "\(error)")))
@@ -168,7 +184,7 @@ public class MxNetworker {
                 let decodedData = try JSONDecoder().decode(decodingType, from: data)
                 completion(.success(decodedData))
             } catch {
-                completion(.failure(.failedDeserialization(type: String(describing: T.self))))
+                completion(.failure(.failedDeserialization(type: String(describing: decodingType))))
             }
         }.resume()
     }
