@@ -33,7 +33,25 @@ class MockUrlSession: URLSessionProtocol {
     
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         calledMethods.insert(.data)
+        receivedRequest = request
         return await withCheckedContinuation { continuation in
+
+            if let data = expectedCompletionValues?.data,
+               let response = expectedCompletionValues?.response {
+                continuation.resume(returning: (data, response))
+                return
+            }
+
+            if let data = expectedCompletionValues?.data {
+                continuation.resume(returning: (data, URLResponse()))
+                return
+            }
+
+            if let response = expectedCompletionValues?.response {
+                continuation.resume(returning: (Data(), response))
+                return
+            }
+            
             continuation.resume(returning: (Data(), URLResponse()))
         }
     }

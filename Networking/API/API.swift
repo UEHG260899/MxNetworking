@@ -188,4 +188,31 @@ public class MxNetworker {
             }
         }.resume()
     }
+
+    /// Makes a GET request to a certain endpoint using async sintax
+    /// - Parameters:
+    ///   - endpoint: The endpoint used for the request
+    ///   - decodingType: The data type that is expected to decode (Must conform to Decodable protocol)
+    /// - Returns: An object of the decoding type
+    public func fetch<T: Decodable>(endpoint: EndpointType, decodingType: T.Type) async throws -> T {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = HTTPMethod.get.rawValue
+        
+        let (data, response) =  try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+
+        guard 200...300 ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
+        
+        do {
+            let decodedData = try JSONDecoder().decode(decodingType, from: data)
+            return decodedData
+        } catch {
+            throw APIError.failedDeserialization(type: String(describing: decodingType))
+        }
+    }
 }

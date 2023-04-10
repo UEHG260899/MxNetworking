@@ -298,4 +298,92 @@ final class MxNetworkerTests: XCTestCase {
         waitForExpectations(timeout: 0.1)
         XCTAssertTrue((fetchedData as AnyObject) is PokemonList)
     }
+
+    // MARK: - Async fetch with Endpoint
+
+    func test_asyncFetch_withEndpoint_callsData_onSession() async {
+        // when
+        do {
+            let _ = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+            XCTAssertTrue(mockSession.calledMethods.contains(.data))
+        } catch {
+            XCTAssertTrue(mockSession.calledMethods.contains(.data))
+        }
+    }
+
+    func test_asynFetch_withEndpoint_sendsCorrectRequest_toSession() async {
+        // given
+        var mockRequest = URLRequest(url: mockURL)
+        mockRequest.httpMethod = HTTPMethod.get.rawValue
+
+        // when
+        do {
+            let _ = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+            XCTAssertEqual(mockSession.receivedRequest, mockRequest)
+        } catch {
+            XCTAssertTrue(mockSession.calledMethods.contains(.data))
+        }
+    }
+
+    func test_asyncFetch_withEndpoint_throwsInvalidResponse_whenResponseCantBeCasted_toHTTPURLResponse() async {
+        // given
+        let mockResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        do {
+            let _ = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+            XCTFail()
+        } catch {
+            // then
+            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+        }
+    }
+
+    func test_asyncFetch_withEndpoint_throwsRequestFailed_whenResponseCode_isNotBetween200And300() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 404)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        do {
+            let _ = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+            XCTFail()
+        } catch {
+            // then
+            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+        }
+    }
+
+    func test_asyncFetch_withEndpoint_throwsFailedDeserialization_ifResponseDataDoesntMatchModel() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        let wrongData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
+        mockSession.expectedCompletionValues = (wrongData, mockResponse, nil)
+
+        // when
+        do {
+            let _ = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+            XCTFail()
+        } catch {
+            // then
+            XCTAssertEqual(.failedDeserialization(type: String(describing: PokemonList.self)), error as? APIError)
+        }
+    }
+
+    func test_asyncFetch_withEndpoint_returnsDecodedData_ifResponseDataMatchesmModel() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
+        mockSession.expectedCompletionValues = (validData, mockResponse, nil)
+
+        // when
+        do {
+            let decodedData = try await sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+
+            // then
+            XCTAssertNotNil(decodedData)
+        } catch {
+            XCTFail()
+        }
+    }
 }
