@@ -22,6 +22,9 @@
 		A4B97E16299DB0F00027E8BD /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B97E15299DB0F00027E8BD /* Product.swift */; };
 		A4ECF79B299D7B00004447ED /* PokemonList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF79A299D7B00004447ED /* PokemonList.swift */; };
 		A4ECF79D299D7B24004447ED /* PokeApiEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF79C299D7B24004447ED /* PokeApiEndpoint.swift */; };
+		A4F45E3629E477D2000F0B4F /* bad_pokemon_response.json in Resources */ = {isa = PBXBuildFile; fileRef = A4F45E3429E4761D000F0B4F /* bad_pokemon_response.json */; };
+		A4F45E3729E477D6000F0B4F /* correct_pokemon_response.json in Resources */ = {isa = PBXBuildFile; fileRef = A4F45E3229E47608000F0B4F /* correct_pokemon_response.json */; };
+		A4F45E3A29E47B50000F0B4F /* Bundle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F45E3929E47B50000F0B4F /* Bundle+Extensions.swift */; };
 		AA97B280594973F87CCB06D1 /* Pods_MxNetworking_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D375CD65AD7763F9A3D95E55 /* Pods_MxNetworking_Tests.framework */; };
 		F34FEC40F4191AC850804845 /* Pods_MxNetworking_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96A7542ACC360BA9DD29ABE5 /* Pods_MxNetworking_Example.framework */; };
 /* End PBXBuildFile section */
@@ -60,6 +63,9 @@
 		A4B97E15299DB0F00027E8BD /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		A4ECF79A299D7B00004447ED /* PokemonList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonList.swift; sourceTree = "<group>"; };
 		A4ECF79C299D7B24004447ED /* PokeApiEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeApiEndpoint.swift; sourceTree = "<group>"; };
+		A4F45E3229E47608000F0B4F /* correct_pokemon_response.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = correct_pokemon_response.json; sourceTree = "<group>"; };
+		A4F45E3429E4761D000F0B4F /* bad_pokemon_response.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bad_pokemon_response.json; sourceTree = "<group>"; };
+		A4F45E3929E47B50000F0B4F /* Bundle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extensions.swift"; sourceTree = "<group>"; };
 		D375CD65AD7763F9A3D95E55 /* Pods_MxNetworking_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MxNetworking_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF494045585CFF0DFFA757F4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F95EFA8BC7CC260FD985B5DA /* Pods-MxNetworking_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MxNetworking_Tests.release.xcconfig"; path = "Target Support Files/Pods-MxNetworking_Tests/Pods-MxNetworking_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -133,6 +139,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A4F45E3829E47B37000F0B4F /* Utils */,
+				A4F45E3129E475E2000F0B4F /* Mock JSON */,
 				A40D602929E234BD004134F0 /* Mocks */,
 				A40D602029E231C8004134F0 /* Cases */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
@@ -216,6 +224,23 @@
 				A4B97E15299DB0F00027E8BD /* Product.swift */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		A4F45E3129E475E2000F0B4F /* Mock JSON */ = {
+			isa = PBXGroup;
+			children = (
+				A4F45E3229E47608000F0B4F /* correct_pokemon_response.json */,
+				A4F45E3429E4761D000F0B4F /* bad_pokemon_response.json */,
+			);
+			name = "Mock JSON";
+			sourceTree = "<group>";
+		};
+		A4F45E3829E47B37000F0B4F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A4F45E3929E47B50000F0B4F /* Bundle+Extensions.swift */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		BF9FFF465E8F421A70A1C380 /* Pods */ = {
@@ -335,6 +360,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4F45E3629E477D2000F0B4F /* bad_pokemon_response.json in Resources */,
+				A4F45E3729E477D6000F0B4F /* correct_pokemon_response.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A40D602C29E23609004134F0 /* MockUrlSession.swift in Sources */,
+				A4F45E3A29E47B50000F0B4F /* Bundle+Extensions.swift in Sources */,
 				A40D602229E2320E004134F0 /* MxNetworkerTests.swift in Sources */,
 				A40D602829E234AA004134F0 /* PokeApiEndpoint.swift in Sources */,
 				A40D602729E234A7004134F0 /* PokemonList.swift in Sources */,

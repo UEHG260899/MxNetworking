@@ -143,7 +143,7 @@ public class MxNetworker {
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = HTTPMethod.get.rawValue
 
-        session.dataTask(with: request) { _, response, error in
+        session.dataTask(with: request) { data, response, error in
             if let error {
                 completion(.failure(.unknown(description: "\(error)")))
                 return
@@ -152,6 +152,23 @@ public class MxNetworker {
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(.failure(.invalidResponse(response: response)))
                 return
+            }
+
+            guard 200...300 ~= httpResponse.statusCode else {
+                completion(.failure(.requestFailed(errorCode: httpResponse.statusCode)))
+                return
+            }
+
+            guard let data else {
+                completion(.failure(.unknown(description: "No data received")))
+                return
+            }
+
+            do {
+                let decodedData = try JSONDecoder().decode(decodingType, from: data)
+                completion(.success(decodedData))
+            } catch {
+                completion(.failure(.failedDeserialization(type: String(describing: T.self))))
             }
         }.resume()
     }

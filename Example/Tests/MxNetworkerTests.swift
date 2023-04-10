@@ -40,10 +40,27 @@ final class MxNetworkerTests: XCTestCase {
         switch value {
         case let error as Error:
             return .unknown(description: "\(error)")
+        case let httpResponse as HTTPURLResponse:
+            return .requestFailed(errorCode: httpResponse.statusCode)
         case let response as URLResponse:
             return .invalidResponse(response: response)
         default:
-            return .unknown(description: "")
+            return .unknown(description: "No data received")
+        }
+    }
+
+    private func givenMockHTTPResponse(code: Int) -> HTTPURLResponse? {
+        return HTTPURLResponse(url: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!, statusCode: code, httpVersion: nil, headerFields: nil)
+    }
+
+    // MARK: - When functions
+
+    private func whenClosureFetchCompletesWithError() {
+        sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self) { [weak self] result in
+            if case .failure(let error) = result {
+                self?.receivedError = error
+                self?.globalExpectation.fulfill()
+            }
         }
     }
 
@@ -80,12 +97,7 @@ final class MxNetworkerTests: XCTestCase {
         mockSession.expectedCompletionValues = (nil, nil, mockError)
 
         // when
-        sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: Pokemon.self) { [weak self] result in
-            if case .failure(let error) = result {
-                self?.receivedError = error
-                self?.globalExpectation.fulfill()
-            }
-        }
+        whenClosureFetchCompletesWithError()
 
         // then
         waitForExpectations(timeout: 0.1)
@@ -99,15 +111,74 @@ final class MxNetworkerTests: XCTestCase {
         mockSession.expectedCompletionValues = (nil, mockInvalidResponse, nil)
 
         // when
-        sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: Pokemon.self) { [weak self] result in
-            if case .failure(let error) = result {
-                self?.receivedError = error
+        whenClosureFetchCompletesWithError()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+    }
+
+    func test_closureFetchFunction_withEndpoint_completesRequestFailed_whenResponseCode_isNotBetween_200and300() {
+        // given
+        givenExpectation(description: "Should receive error")
+        let mockResponse = givenMockHTTPResponse(code: 404)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        whenClosureFetchCompletesWithError()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+    }
+
+    func test_closureFetchFunction_withEndpoint_completesUnknown_whenNoData_wasReceived() {
+        // given
+        givenExpectation(description: "Should receive error")
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        whenClosureFetchCompletesWithError()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: ""), receivedError)
+    }
+
+    func test_closureFetchFunction_withEndpoint_completesDeserializationFailure_whenDataDoesntCorresponds_toModel() {
+        // given
+        givenExpectation(description: "Should receive error")
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        let badData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
+        mockSession.expectedCompletionValues = (badData, mockResponse, nil)
+
+        // when
+        whenClosureFetchCompletesWithError()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(.failedDeserialization(type: String(describing: PokemonList.self)), receivedError)
+    }
+
+    func test_closureFetchFuncion_withEndpoint_completesWithDecodedData_whenResponseData_matchesModel() {
+        // given
+        givenExpectation(description: "Should return decoded data")
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
+        mockSession.expectedCompletionValues = (validData, mockResponse, nil)
+        var fetchedData: Any?
+
+        // when
+        sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self) { [weak self] result in
+            if case .success(let pokemonData) = result {
+                fetchedData = pokemonData
                 self?.globalExpectation.fulfill()
             }
         }
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+        XCTAssertTrue((fetchedData as AnyObject) is PokemonList)
     }
 }
