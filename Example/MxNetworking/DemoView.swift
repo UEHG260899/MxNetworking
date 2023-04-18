@@ -10,7 +10,7 @@ import UIKit
 
 class DemoView: UIView {
     
-    lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 34, weight: .semibold)
@@ -20,7 +20,7 @@ class DemoView: UIView {
         return label
     }()
     
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
@@ -79,6 +79,9 @@ class DemoView: UIView {
         super.draw(rect)
         stackView.addArrangedSubview(closureFetchButton)
         stackView.addArrangedSubview(closurePostButton)
+        stackView.addArrangedSubview(asyncFetchButton)
+        stackView.addArrangedSubview(asyncPostButton)
+
         addSubview(titleLabel)
         addSubview(stackView)
         addSubview(footNoteLabel)

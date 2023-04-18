@@ -11,6 +11,8 @@ import MxNetworking
 
 class ViewController: UIViewController {
 
+    private let networker = MxNetworker()
+
     private lazy var demoView: DemoView = {
        let view = DemoView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -27,18 +29,8 @@ class ViewController: UIViewController {
             demoView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             demoView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
-        
-        
-        if #available(iOS 15, *) {
-            demoView.stackView.addArrangedSubview(demoView.asyncFetchButton)
-            demoView.stackView.addArrangedSubview(demoView.asyncPostButton)
-            demoView.asyncFetchButton.addTarget(self, action: #selector(performAsyncFetch), for: .touchUpInside)
-            demoView.asyncPostButton.addTarget(self, action: #selector(performAsyncPost), for: .touchUpInside)
-        }
+
         configureTargets()
-        
-        let networker = MxNetworker(session: URLSession.shared)
-        networker.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self, completion: {_ in})
     }
 }
 
@@ -46,11 +38,13 @@ private extension ViewController {
     func configureTargets() {
         demoView.closureFetchButton.addTarget(self, action: #selector(performClosureFetchRequest), for: .touchUpInside)
         demoView.closurePostButton.addTarget(self, action: #selector(performClosurePostRequest), for: .touchUpInside)
+        demoView.asyncFetchButton.addTarget(self, action: #selector(performAsyncFetch), for: .touchUpInside)
+        demoView.asyncPostButton.addTarget(self, action: #selector(performAsyncPost), for: .touchUpInside)
     }
 
     @objc
     func performClosureFetchRequest() {
-        API.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self) { result in
+        networker.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self) { result in
             switch result {
             case .success(let pokemons):
                 AlertProvider.shared.showSuccessAlert(data: pokemons, in: self)
@@ -62,8 +56,7 @@ private extension ViewController {
 
     @objc
     func performClosurePostRequest() {
-        let product = Product(id: nil, title: "Hola", price: 300.0, description: "Prueba", image: "dohowho", category: "dhodhapod")
-        API.post(endpoint: FakeStoreEndpoint.createProduct, body: product) { result in
+        networker.post(endpoint: FakeStoreEndpoint.createProduct, body: Product.mock) { result in
             switch result {
             case .success:
                 AlertProvider.shared.showSuccessAlert(data: "Post requests are not supposed to return data", in: self)
@@ -73,12 +66,11 @@ private extension ViewController {
         }
     }
 
-    @available(iOS 15, *)
     @objc
     func performAsyncFetch() {
         Task {
             do {
-                let pokemonData = try await API.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self)
+                let pokemonData = try await networker.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 50), decodingType: PokemonList.self)
                 AlertProvider.shared.showSuccessAlert(data: pokemonData, in: self)
             } catch {
                 AlertProvider.shared.showErrorAlert(with: error, in: self)
@@ -86,13 +78,11 @@ private extension ViewController {
         }
     }
 
-    @available(iOS 15, *)
     @objc
     func performAsyncPost() {
         Task {
             do {
-                let product = Product(id: nil, title: "Hola", price: 300.0, description: "Prueba", image: "dohowho", category: "dhodhapod")
-                try await API.post(endpoint: FakeStoreEndpoint.createProduct, body: product)
+                try await networker.post(endpoint: FakeStoreEndpoint.createProduct, body: Product.mock)
                 AlertProvider.shared.showSuccessAlert(data: "Post requests are not supposed to return data", in: self)
             } catch {
                 AlertProvider.shared.showErrorAlert(with: error, in: self)

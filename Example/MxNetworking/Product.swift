@@ -9,6 +9,9 @@
 import Foundation
 
 struct Product: Codable {
+
+    static let mock = Product(id: nil, title: "Hola", price: 300.0, description: "Prueba", image: "dohowho", category: "dhodhapod")
+
     let id: Int?
     let title: String
     let price: Double
