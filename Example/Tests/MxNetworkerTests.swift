@@ -54,6 +54,25 @@ final class MxNetworkerTests: XCTestCase {
         return HTTPURLResponse(url: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!, statusCode: code, httpVersion: nil, headerFields: nil)
     }
 
+    private func givenTestProduct() -> Product {
+        return Product(id: nil, title: "", price: 0, description: "", image: "", category: "")
+    }
+
+    private func givenRequest(method: HTTPMethod = .get, body: Encodable? = nil, headers: [String: String]? = nil) -> URLRequest {
+        var request = URLRequest(url: mockURL)
+        request.httpMethod = method.rawValue
+
+        if let body  {
+            request.httpBody = try? JSONEncoder().encode(body)
+        }
+
+        if let headers {
+            headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
+        }
+
+        return request
+    }
+
     // MARK: - When functions
 
     private func whenClosureFetchCompletesWithError() {
@@ -68,6 +87,30 @@ final class MxNetworkerTests: XCTestCase {
     private func whenClosureFetchWithUrlCompletesWithError() {
         sut.fetch(url: mockURL, decodingType: PokemonList.self) { [weak self] result in
             if case .failure(let error) = result {
+                self?.receivedError = error
+                self?.globalExpectation.fulfill()
+            }
+        }
+    }
+
+    private func whenClosurePostWithEndpointCompletes() {
+        sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct()) { [weak self] result in
+            switch result {
+            case .success:
+                self?.globalExpectation.fulfill()
+            case .failure(let error):
+                self?.receivedError = error
+                self?.globalExpectation.fulfill()
+            }
+        }
+    }
+
+    private func whenClosurePostWithUrlCompletes() {
+        sut.post(url: mockURL, body: givenTestProduct()) { [weak self] result in
+            switch result {
+            case .success:
+                self?.globalExpectation.fulfill()
+            case .failure(let error):
                 self?.receivedError = error
                 self?.globalExpectation.fulfill()
             }
@@ -313,8 +356,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asynFetch_withEndpoint_sendsCorrectRequest_toSession() async {
         // given
-        var mockRequest = URLRequest(url: mockURL)
-        mockRequest.httpMethod = HTTPMethod.get.rawValue
+        let mockRequest = givenRequest()
 
         // when
         do {
@@ -387,6 +429,8 @@ final class MxNetworkerTests: XCTestCase {
         }
     }
 
+    // MARK: - Async fetch with URL
+
     func test_asyncFetch_withURL_callsData_onSession() async {
         // when
         do {
@@ -399,8 +443,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asyncFetch_withURL_sendsCorrectRequest_toSession() async {
         // given
-        var request = URLRequest(url: mockURL)
-        request.httpMethod = HTTPMethod.get.rawValue
+        let request = givenRequest()
 
         // when
         do {
@@ -468,5 +511,201 @@ final class MxNetworkerTests: XCTestCase {
         } catch {
             XCTFail()
         }
+    }
+
+    // MARK: - Closure post function with endpoint
+
+    func test_closurePost_withEndpoint_callsDataTask_onSession() {
+        // given
+        let testProduct = givenTestProduct()
+
+        // when
+        sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: testProduct, completion: {_ in})
+
+        // then
+        XCTAssertTrue(mockSession.calledMethods.contains(.dataTask))
+    }
+
+    func test_closurePost_withEndpoint_sendsCorrectRequest_toSession() {
+        // given
+        let testProduct = givenTestProduct()
+        let request = givenRequest(method: .post, body: testProduct)
+
+        // when
+        sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: testProduct, completion: {_ in})
+
+        // then
+        XCTAssertEqual(request.url, mockSession.receivedRequest?.url)
+        XCTAssertEqual(request.httpMethod, mockSession.receivedRequest?.httpMethod)
+        XCTAssertEqual(request.httpBody, mockSession.receivedRequest?.httpBody)
+    }
+
+    func test_closurePost_withEndpoint_sendsHeaders_ifSent_onFunction() {
+        // given
+        let testProduct = givenTestProduct()
+
+        let testHeaders = [
+            "Authorization": "Bearer Auth",
+            "Some other": "1"
+        ]
+
+        // when
+        sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: testProduct, headers: testHeaders, completion: { _ in})
+
+        // then
+        XCTAssertEqual(testHeaders, mockSession.receivedRequest?.allHTTPHeaderFields)
+    }
+
+    func test_closurePost_withEndpoint_completesWithUnknownError_whenResponseHasError() {
+        // given
+        let error = NSError(domain: "com.mxnetworking", code: 123)
+        givenExpectation(description: "Should complete with error")
+        mockSession.expectedCompletionValues = (nil, nil, error)
+
+        // when
+        whenClosurePostWithEndpointCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: error), receivedError)
+    }
+
+    func test_closurePost_completesWithInvalidResponse_whenResponceCantBeCasted_intoHTTPURLResponse() {
+        // given
+        let mockInvalidResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        givenExpectation(description: "Should complete with error")
+        mockSession.expectedCompletionValues = (nil, mockInvalidResponse, nil)
+
+        // when
+        whenClosurePostWithEndpointCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+    }
+
+    func test_closurePost_withEndpoint_completesWithRequestFailed_whenResponseCode_isntBetween200And300() {
+        // given
+        givenExpectation(description: "Should complete with error")
+        let response = givenMockHTTPResponse(code: 404)
+        mockSession.expectedCompletionValues = (nil, response, nil)
+
+        // when
+        whenClosurePostWithEndpointCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: response), receivedError)
+    }
+
+    func test_closurePost_withEndpoint_completesWithSuccess_whenResponseCode_isBetween200And300() {
+        // given
+        givenExpectation(description: "Should complete with no errors")
+        let response = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (nil, response, nil)
+
+        // when
+        whenClosurePostWithEndpointCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertNil(receivedError)
+    }
+
+    // MARK: - Closure post with url
+
+    func test_closurePost_withURL_callsDataTask_onSession() {
+        // given
+        let testProduct = givenTestProduct()
+        
+        // when
+        sut.post(url: mockURL, body: testProduct, completion: {_ in})
+
+        // then
+        XCTAssertTrue(mockSession.calledMethods.contains(.dataTask))
+    }
+
+    func test_closurePost_withURL_sendsCorrectRequest_toSession() {
+        // given
+        let testProduct = givenTestProduct()
+        let request = givenRequest(method: .post, body: testProduct)
+
+        // when
+        sut.post(url: mockURL, body: testProduct, completion: {_ in })
+
+        // then
+        XCTAssertEqual(request.url, mockSession.receivedRequest?.url)
+        XCTAssertEqual(request.httpMethod, mockSession.receivedRequest?.httpMethod)
+        XCTAssertEqual(request.httpBody, mockSession.receivedRequest?.httpBody)
+    }
+
+    func test_closurePost_withURL_setsHeadersOnRequest_whenTheyAreSent() {
+        // given
+        let mockHeaders = [
+            "Authorization": "Bearer Auth",
+            "Some": "1"
+        ]
+
+        // when
+        sut.post(url: mockURL, body: givenTestProduct(), headers: mockHeaders, completion: { _ in})
+
+        // then
+        XCTAssertEqual(mockSession.receivedRequest?.allHTTPHeaderFields, mockHeaders)
+    }
+
+    func test_closurePost_withURL_completesWithUnknown_whenErrorIsReceived() {
+        // given
+        givenExpectation(description: "Should complete with unknown error")
+        let mockError = NSError(domain: "com.mxnetworking", code: 123)
+        mockSession.expectedCompletionValues = (nil, nil, mockError)
+
+        // when
+        whenClosurePostWithUrlCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockError), receivedError)
+    }
+
+    func test_closurePost_withURL_completesWithInvalidResponse_whenResponseCantBeCasted_toHTTPURLResponse() {
+        // given
+        let mockInvalidResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        givenExpectation(description: "Should complete with invalidResponse")
+        mockSession.expectedCompletionValues = (nil, mockInvalidResponse, nil)
+
+        // when
+        whenClosurePostWithUrlCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+    }
+
+    func test_closurePost_withURL_completesWithRequestFailed_ifResponseCode_isNotBetween200And300() {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 404)
+        givenExpectation(description: "Should complete with requestFailed")
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        whenClosurePostWithUrlCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+    }
+
+    func test_closurePost_withURL_completesWithSuccess_whenResponseCode_isBetween200And300() {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        givenExpectation(description: "Should complete with success")
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        whenClosurePostWithUrlCompletes()
+
+        // then
+        waitForExpectations(timeout: 0.1)
+        XCTAssertNil(receivedError)
     }
 }

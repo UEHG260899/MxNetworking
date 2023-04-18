@@ -18,6 +18,7 @@
 		A40D602C29E23609004134F0 /* MockUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40D602A29E234C8004134F0 /* MockUrlSession.swift */; };
 		A43789B929DF38960017718A /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43789B829DF38960017718A /* DemoView.swift */; };
 		A43789BE29DF48F70017718A /* AlertProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43789BD29DF48F70017718A /* AlertProvider.swift */; };
+		A47A8CB929EB3C0B00C35C44 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B97E15299DB0F00027E8BD /* Product.swift */; };
 		A4B97E14299DB06E0027E8BD /* FakeStoreEnpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B97E13299DB06E0027E8BD /* FakeStoreEnpoint.swift */; };
 		A4B97E16299DB0F00027E8BD /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B97E15299DB0F00027E8BD /* Product.swift */; };
 		A4ECF79B299D7B00004447ED /* PokemonList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4ECF79A299D7B00004447ED /* PokemonList.swift */; };
@@ -457,6 +458,7 @@
 				A40D602229E2320E004134F0 /* MxNetworkerTests.swift in Sources */,
 				A40D602829E234AA004134F0 /* PokeApiEndpoint.swift in Sources */,
 				A40D602729E234A7004134F0 /* PokemonList.swift in Sources */,
+				A47A8CB929EB3C0B00C35C44 /* Product.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
