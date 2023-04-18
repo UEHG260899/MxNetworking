@@ -193,5 +193,56 @@ public extension MxNetworker {
             completion(.success(()))
         }.resume()
     }
+
+    /// Makes a POST request to a certain endpoint
+    /// - Parameters:
+    ///   - endpoint: The endpoint used for the request
+    ///   - returnType: The data type of the expected response (Must conform to Decodable protocol)
+    ///   - body: The request body
+    ///   - headers:  Headers for the request, nil by default
+    func post(endpoint: EndpointType, body: Encodable, headers: [String: String]? = nil) async throws {
+        var request = URLRequest(url: endpoint.url)
+        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpBody = try? JSONEncoder().encode(body)
+
+        if let headers {
+            headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+        }
+
+        let (_, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+
+        guard 200...300 ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
+    }
+
+    /// Makes a POST request to a certain url
+    /// - Parameters:
+    ///   - url: The url used for the request
+    ///   - body: The request body
+    ///   - headers: Headers for the request, nil by default
+    func post(url: URL, body: Encodable, headers: [String: String]? = nil) async throws {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpBody = try? JSONEncoder().encode(body)
+
+        if let headers {
+            headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+        }
+
+        let (_, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+
+        guard 200...300 ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
+    }
     
 }

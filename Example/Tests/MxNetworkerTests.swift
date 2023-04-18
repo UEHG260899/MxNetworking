@@ -117,6 +117,15 @@ final class MxNetworkerTests: XCTestCase {
         }
     }
 
+    private func whenAsyncPostCompletesWithError() async {
+        do {
+            try await sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct())
+            XCTFail()
+        } catch {
+            receivedError = error as? APIError
+        }
+    }
+
     func test_onInit_sessionProperty_isSet() {
         XCTAssertNotNil(sut.session)
     }
@@ -707,5 +716,183 @@ final class MxNetworkerTests: XCTestCase {
         // then
         waitForExpectations(timeout: 0.1)
         XCTAssertNil(receivedError)
+    }
+
+    // MARK: - Async post with endpoint
+
+    func test_asyncPost_withEndpoint_callsData_onSession() async {
+        // when
+        do {
+            try await sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct())
+        } catch {
+            print(error)
+        }
+    
+        // then
+        XCTAssertTrue(mockSession.calledMethods.contains(.data))
+    }
+
+    func test_asyncPost_withEndpoint_sendCorrectRequest_toSession() async {
+        // given
+        let request = givenRequest(method: .post, body: givenTestProduct())
+
+        // when
+        do {
+            try await sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct())
+        } catch {
+            print(error)
+        }
+
+        // then
+        XCTAssertEqual(request.url, mockSession.receivedRequest?.url)
+        XCTAssertEqual(request.httpMethod, mockSession.receivedRequest?.httpMethod)
+        XCTAssertEqual(request.httpBody, mockSession.receivedRequest?.httpBody)
+    }
+
+    func test_asyncPost_withEndpoint_setsHeaders_whenHeadersAreSent() async {
+        // given
+        let mockHeaders = [
+            "Authorization": "bearer",
+            "Some": "1"
+        ]
+
+        // when
+        do {
+            try await sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct(), headers: mockHeaders)
+        } catch {
+            print(error)
+        }
+
+        // then
+        XCTAssertEqual(mockHeaders, mockSession.receivedRequest?.allHTTPHeaderFields)
+    }
+
+    func test_asyncPost_withEndpoint_throwsInvalidResponse_whenItCantBeCasted_toHTTPURLResponse() async {
+        // given
+        let mockInvalidResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        mockSession.expectedCompletionValues = (nil, mockInvalidResponse, nil)
+
+        // when
+        await whenAsyncPostCompletesWithError()
+
+        // then
+        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+    }
+
+    func test_asyncPost_withEndpoint_throwsRequestFailed_whenResponseCode_isntBetween200And300() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 404)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        await whenAsyncPostCompletesWithError()
+
+        // then
+        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+    }
+
+    func test_asyncPost_withEndpoint_doesntThrow_whenResponseCode_isBetween200And300() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        do {
+            try await sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: givenTestProduct())
+        } catch {
+            XCTFail()
+        }
+    }
+
+    // MARK: - Async post with URL
+
+    func test_asyncPost_withURL_callsData_onSession() async {
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct())
+        } catch {
+            print(error)
+        }
+
+        // then
+        XCTAssertTrue(mockSession.calledMethods.contains(.data))
+    }
+
+    func test_asyncPost_withURL_sendsCorrectRequest_toSession() async {
+        // given
+        let request = givenRequest(method: .post, body: givenTestProduct())
+
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct())
+        } catch {
+            print(error)
+        }
+
+        // then
+        XCTAssertEqual(request.url, mockSession.receivedRequest?.url)
+        XCTAssertEqual(request.httpMethod, mockSession.receivedRequest?.httpMethod)
+        XCTAssertEqual(request.httpBody, mockSession.receivedRequest?.httpBody)
+    }
+
+    func test_asycPost_withURL_setsHeadersOnRequest_whenHeadersAreSent() async {
+        // given
+        let mockHeaders = [
+            "Authorization": "Bearer",
+            "Some": "1"
+        ]
+
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct(), headers: mockHeaders)
+        } catch {
+            print(error)
+        }
+
+        // then
+        XCTAssertEqual(mockHeaders, mockSession.receivedRequest?.allHTTPHeaderFields)
+    }
+
+    func test_asyncPost_withURL_throwsInvalidResponse_whenResponseCantBeCasted_toHTTPURLResponse() async {
+        // given
+        let mockInvalidResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        mockSession.expectedCompletionValues = (nil, mockInvalidResponse, nil)
+
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct())
+            XCTFail()
+        } catch {
+            // then
+            XCTAssertEqual(getExpectedError(for: mockInvalidResponse), error as? APIError)
+        }
+    }
+
+    func test_asyncPost_withURL_throwsRequestFailed_whenResponseCode_isntBetween200And300() async {
+        // given
+        let mockResposne = givenMockHTTPResponse(code: 404)
+        mockSession.expectedCompletionValues = (nil, mockResposne, nil)
+
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct())
+            XCTFail()
+        } catch {
+            // then
+            XCTAssertEqual(getExpectedError(for: mockResposne), error as? APIError)
+        }
+    }
+
+    func test_asycnPost_withURL_doesntThrow_whenResponseCode_isBetween200And300() async {
+        // given
+        let mockResponse = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (nil, mockResponse, nil)
+
+        // when
+        do {
+            try await sut.post(url: mockURL, body: givenTestProduct())
+        } catch {
+            XCTFail()
+        }
     }
 }
