@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      
+
       - name: Selecting Xcode Version
         run: |
           sudo xcode-select -switch /Applications/Xcode_14.2.app
@@ -24,8 +24,8 @@ jobs:
       - name: Installing homebrew
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      
-      - name: Overide cocoapods:
+
+      - name: Overide cocoapods version
         run: brew link --overwrite cocoapods
 
       - name: Installing cocoapods
