@@ -1,6 +1,9 @@
 name: Build Project
 
 on:
+  push:
+    branches:
+      - "**"
   pull_request:
     branches:
       - '**'
@@ -20,7 +23,7 @@ jobs:
 
       - name: Installing homebrew
         run: |
-          sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       
       - name: Installing cocoapods
         run: |
