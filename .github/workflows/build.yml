@@ -26,4 +26,4 @@ jobs:
 
       - name: Build project
         run: |
-          pwd && xcodebuild clean -project MxNetworking.xcworkspace -scheme MxNetworking | xcpretty
+          ls && xcodebuild clean -project MxNetworking.xcworkspace -scheme MxNetworking | xcpretty
