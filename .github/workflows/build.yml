@@ -27,4 +27,7 @@ jobs:
       
       - name: Installing cocoapods
         run: |
-          brew install cocoapods@1.11.3
+          brew install cocoapods
+      
+      - name: Generating PODs project
+        run: pod install
