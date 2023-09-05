@@ -21,16 +21,5 @@ jobs:
         run: |
           sudo xcode-select -switch /Applications/Xcode_14.2.app
 
-      - name: Installing homebrew
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-      - name: Overide cocoapods version
-        run: brew link --overwrite cocoapods
-
-      - name: Installing cocoapods
-        run: |
-          brew install cocoapods
-      
       - name: Generating PODs project
         run: cd ./Example && pod install
