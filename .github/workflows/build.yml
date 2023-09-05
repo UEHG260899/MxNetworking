@@ -27,3 +27,7 @@ jobs:
       - name: Build project
         run: |
           cd ./Example && xcodebuild clean -workspace MxNetworking.xcworkspace -scheme MxNetworking
+
+      - name: Test project
+        run: |
+          cd ./Example && xcodebuild test -workspace MxNetworking.xcworkspace -scheme MxNetworking -destination 'platform=iOS   Simulator,name=iPhone 14,OS=16.2'
