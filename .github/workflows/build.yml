@@ -23,3 +23,7 @@ jobs:
 
       - name: Generating PODs project
         run: cd ./Example && pod install
+
+      - name: Build project
+        run: |
+          xcodebuild clean -project MxNetworking.xcodeproj -scheme MxNetworking | xcpretty
