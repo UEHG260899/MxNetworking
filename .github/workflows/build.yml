@@ -1,0 +1,27 @@
+name: Build Project
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  CI:
+    name: Build pipeline
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Selecting Xcode Version
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_14.2.app
+
+      - name: Installing homebrew
+        run: |
+          sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      
+      - name: Installing cocoapods
+        run: |
+          brew install cocoapods@1.11.3
