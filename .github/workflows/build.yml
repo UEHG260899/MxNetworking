@@ -30,4 +30,4 @@ jobs:
 
       - name: Test project
         run: |
-          cd ./Example && xcodebuild test -workspace MxNetworking.xcworkspace -scheme MxNetworking-Example -destination 'platform=iOS   Simulator,name=iPhone 14,OS=16.2'
+          cd ./Example && xcodebuild test -workspace MxNetworking.xcworkspace -scheme MxNetworking-Example -destination 'platform=iOS Simulator,OS=16.2,name=iPhone 14'
