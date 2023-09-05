@@ -1,0 +1,33 @@
+name: Build Project
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  CI:
+    name: Build pipeline
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Selecting Xcode Version
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_14.2.app
+
+      - name: Generating PODs project
+        run: cd ./Example && pod install
+
+      - name: Build project
+        run: |
+          cd ./Example && xcodebuild clean -workspace MxNetworking.xcworkspace -scheme MxNetworking
+
+      - name: Test project
+        run: |
+          cd ./Example && xcodebuild test -workspace MxNetworking.xcworkspace -scheme MxNetworking-Example -destination 'platform=iOS Simulator,OS=16.2,name=iPhone 14'
