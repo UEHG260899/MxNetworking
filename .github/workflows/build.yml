@@ -25,9 +25,12 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       
+      - name: Overide cocoapods:
+        run: brew link --overwrite cocoapods
+
       - name: Installing cocoapods
         run: |
           brew install cocoapods
       
       - name: Generating PODs project
-        run: pod install
+        run: cd ./Example && pod install
