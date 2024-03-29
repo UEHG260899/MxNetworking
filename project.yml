@@ -6,7 +6,6 @@ options:
     deploymentTarget:
         iOS: "13.0"
     useTabs: false
-    #postGenCommand: pod install
 
 settings:
     base:
@@ -19,22 +18,31 @@ settings:
 
 targets:
     MxNetworkingDemo:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
         platform: iOS
         type: application
         sources: 
             - MxNetworking/MxNetworkingDemo
         dependencies:
             - target: MxNetworking
-        info:
-            path: MxNetworking/MxNetworkingDemo/Info.plist
     MxNetworking:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+            INFOPLIST_FILE: MxNetworking/Info.plist
         platform: iOS
         type: framework
         sources:
             - MxNetworking/MxNetworking
-        info:
-            path: MxNetworking/MxNetworkingDemo/Info.plist
     MxNetworkingTests:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
         platform: iOS
         type: bundle.unit-test 
         dependencies:
@@ -47,7 +55,7 @@ schemes:
         build:
             targets:
                 MxNetworkingDemo: build
-        tests:
+        test:
             gatherCoverageData: true
             targets:
                 - name: MxNetworkingTests
