@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.0'
 
   s.source_files = 'MxNetworking/MxNetworking/**/*.swift'
-  s.resouces = 'MxNetworking/MxNetworking/**/*.xcassets'
+  s.resources = 'MxNetworking/MxNetworking/**/*.xcassets'
   
   # s.resource_bundles = {
   #   'MxNetworking' => ['MxNetworking/Assets/*.png']
