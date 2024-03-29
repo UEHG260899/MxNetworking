@@ -18,6 +18,8 @@ build/
 DerivedData
 *.hmap
 *.ipa
+*.xcodeproj
+*.xcworskpace
 
 # Bundler
 .bundle
