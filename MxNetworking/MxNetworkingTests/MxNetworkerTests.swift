@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import MxNetworking
+@testable import MxNetworkingDemo
 
 final class MxNetworkerTests: XCTestCase {
 

@@ -1,6 +1,0 @@
-framework module MxNetworking {
-  umbrella header "MxNetworking-umbrella.h"
-
-  export *
-  module * { export * }
-}

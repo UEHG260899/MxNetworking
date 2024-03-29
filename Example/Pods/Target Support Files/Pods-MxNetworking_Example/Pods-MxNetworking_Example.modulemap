@@ -1,6 +1,0 @@
-framework module Pods_MxNetworking_Example {
-  umbrella header "Pods-MxNetworking_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}
