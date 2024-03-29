@@ -2,10 +2,10 @@ use_frameworks!
 
 platform :ios, '10.0'
 
-target 'MxNetworking_Example' do
+target 'MxNetworkingDemo' do
   pod 'MxNetworking', :path => '../'
 
-  target 'MxNetworking_Tests' do
+  target 'MxNetworkingTests' do
     inherit! :search_paths
 
     

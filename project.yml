@@ -1,0 +1,55 @@
+name: MxNetworking
+
+options:
+    bundleIdPrefix: com.urielh
+    xcodeVersion: 15.0.1
+    deploymentTarget:
+        iOS: "13.0"
+    useTabs: false
+    #postGenCommand: pod install
+
+settings:
+    base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 5P4JJDT7CR
+        MARKETING_VERSION: "1.0.0"
+        BUNDLE_VERSION: "1"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: 5.0
+
+targets:
+    MxNetworkingDemo:
+        platform: iOS
+        type: application
+        sources: 
+            - MxNetworking/MxNetworkingDemo
+        dependencies:
+            - target: MxNetworking
+        info:
+            path: MxNetworking/MxNetworkingDemo/Info.plist
+    MxNetworking:
+        platform: iOS
+        type: framework
+        sources:
+            - MxNetworking/MxNetworking
+        info:
+            path: MxNetworking/MxNetworkingDemo/Info.plist
+    MxNetworkingTests:
+        platform: iOS
+        type: bundle.unit-test 
+        dependencies:
+            - target: MxNetworkingDemo
+        sources:
+            - MxNetworking/MxNetworkingTests
+
+schemes:
+    MxNetworkingDemo:
+        build:
+            targets:
+                MxNetworkingDemo: build
+        tests:
+            gatherCoverageData: true
+            targets:
+                - name: MxNetworkingTests
+            coverageTargets:
+                - MxNetworking     
