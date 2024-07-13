@@ -75,8 +75,9 @@ class DemoView: UIView {
         return label
     }()
     
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
         stackView.addArrangedSubview(closureFetchButton)
         stackView.addArrangedSubview(closurePostButton)
         stackView.addArrangedSubview(asyncFetchButton)
@@ -105,5 +106,10 @@ class DemoView: UIView {
             footNoteLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             footNoteLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
         ])
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

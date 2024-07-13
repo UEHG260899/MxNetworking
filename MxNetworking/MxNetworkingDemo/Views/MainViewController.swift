@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MainViewController.swift
 //  MxNetworking
 //
 //  Created by UEHG260899 on 02/15/2023.
@@ -9,7 +9,7 @@
 import UIKit
 import MxNetworking
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
 
     private let networker = MxNetworker()
 
@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         view.addSubview(demoView)
         
         NSLayoutConstraint.activate([
@@ -34,7 +35,7 @@ class ViewController: UIViewController {
     }
 }
 
-private extension ViewController {
+private extension MainViewController {
     func configureTargets() {
         demoView.closureFetchButton.addTarget(self, action: #selector(performClosureFetchRequest), for: .touchUpInside)
         demoView.closurePostButton.addTarget(self, action: #selector(performClosurePostRequest), for: .touchUpInside)
