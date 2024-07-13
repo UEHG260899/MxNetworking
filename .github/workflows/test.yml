@@ -34,4 +34,4 @@ jobs:
 
       - name: Test project
         run: |
-          xcodebuild test -project MxNetworking.xcodeproj -scheme MxNetworkingDemo -destination 'platform=iOS Simulator,OS=16.2,name=iPhone 14'
+          xcodebuild test -project MxNetworking.xcodeproj -scheme MxNetworkingDemo -destination 'platform=iOS Simulator,OS=16.4,name=iPhone 14'
