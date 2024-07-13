@@ -1,9 +1,6 @@
 name: Test Project
 
 on:
-  push:
-    branches:
-      - "**"
   pull_request:
     branches:
       - "dev"
@@ -26,7 +23,7 @@ jobs:
         
       - name: Selecting Xcode Version
         run: |
-          sudo xcode-select -switch /Applications/Xcode_14.2.app
+          sudo xcode-select -switch /Applications/Xcode_14.3.1.app
 
       - name: Generating project
         run: xcodegen
@@ -37,4 +34,4 @@ jobs:
 
       - name: Test project
         run: |
-          xcodebuild test -project MxNetworking.xcodeproj -scheme MxNetworkingDemo -destination 'platform=iOS Simulator,OS=16.2,name=iPhone 14'
+          xcodebuild test -project MxNetworking.xcodeproj -scheme MxNetworkingDemo -destination 'platform=iOS Simulator,OS=16.4,name=iPhone 14'
