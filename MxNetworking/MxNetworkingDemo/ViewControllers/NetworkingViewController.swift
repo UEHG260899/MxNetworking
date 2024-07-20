@@ -12,13 +12,15 @@ class NetworkingViewController: UIViewController {
 
     private let networker: MxNetworker
     
-    private lazy var closureNetworkingView: NetworkingView = {
+    private lazy var networkingView: NetworkingView = {
         let view = NetworkingView()
+        view.delegate = self
+        view.model = NetworkingViewModel(state: .none)
         return view
     }()
     
     override func loadView() {
-        view = closureNetworkingView
+        view = networkingView
     }
 
     init(networker: MxNetworker) {
@@ -32,4 +34,11 @@ class NetworkingViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+}
+
+extension NetworkingViewController: NetworkingViewDelegate {
+    func handleExecuteButtonTap() {
+        networkingView.model = NetworkingViewModel(state: .loading)
+    }
+
 }

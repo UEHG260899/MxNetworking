@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+protocol NetworkingViewDelegate: AnyObject {
+    func handleExecuteButtonTap()
+}
+
 class NetworkingView: UIView {
     
     enum State {
@@ -45,7 +49,7 @@ class NetworkingView: UIView {
         return stack
     }()
 
-    private let actionButton: UIButton = {
+    private let executeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Execute", for: .normal)
@@ -84,7 +88,14 @@ class NetworkingView: UIView {
         return stackView
     }()
 
-    private var state: State = .none
+    var model: NetworkingViewModel? {
+        didSet {
+            guard let model else { return }
+            self.configure(with: model)
+        }
+    }
+
+    weak var delegate: NetworkingViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,7 +103,7 @@ class NetworkingView: UIView {
         
         titleStackView.addArrangedSubview(titleLabel)
         titleStackView.addArrangedSubview(httpMethodPicker)
-        titleStackView.addArrangedSubview(actionButton)
+        titleStackView.addArrangedSubview(executeButton)
         responseStackView.addArrangedSubview(statusLabel)
         responseStackView.addArrangedSubview(responseTextView)
         addSubview(titleStackView)
@@ -103,7 +114,7 @@ class NetworkingView: UIView {
             titleStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
             titleStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             titleStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            actionButton.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.12)
+            executeButton.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.12)
         ])
         
         NSLayoutConstraint.activate([
@@ -112,6 +123,8 @@ class NetworkingView: UIView {
             responseStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             responseStackView.bottomAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
         ])
+        
+        executeButton.addTarget(self, action: #selector(onExecuteTapped), for: .touchUpInside)
     }
     
     #if DEBUG
@@ -134,10 +147,21 @@ class NetworkingView: UIView {
         let availableHeight = self.frame.height - titleStackView.frame.height - 16
         let indicatorTopSpacing = availableHeight / 2
         
+        // TODO: Fix This
         NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             activityIndicator.topAnchor.constraint(equalTo: titleStackView.bottomAnchor, constant: indicatorTopSpacing)
         ])
+    }
+
+    @objc private func onExecuteTapped() {
+        delegate?.handleExecuteButtonTap()
+    }
+
+    private func configure(with model: NetworkingViewModel) {
+        responseStackView.isHidden = model.state == .loading || model.state == .none
+        model.state == .loading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+        statusLabel.text = model.responseStatusLabel
     }
 }
 
@@ -156,7 +180,7 @@ extension NetworkingView: UIPickerViewDataSource, UIPickerViewDelegate {
     }
 }
 
-struct ClosureNetworkingView_Previews: PreviewProvider {    
+struct ClosureNetworkingView_Previews: PreviewProvider {
     static var previews: some View {
         ViewPreview {
             NetworkingView(state: .none)
