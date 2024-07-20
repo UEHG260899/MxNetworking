@@ -26,6 +26,8 @@ class MainViewController: UIViewController {
 
 extension MainViewController: MainViewDelegate {
     func closureButtonTapped() {
+        let viewController = NetworkingViewController(networker: networker)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     func asyncButtonTapped() {
