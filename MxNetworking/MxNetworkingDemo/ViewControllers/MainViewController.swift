@@ -26,10 +26,14 @@ class MainViewController: UIViewController {
 
 extension MainViewController: MainViewDelegate {
     func closureButtonTapped() {
-        let viewController = NetworkingViewController(networker: networker)
+        let strategy = ClosureNetworking(networker: networker)
+        let viewController = NetworkingViewController(networkingStrategy: strategy)
         navigationController?.pushViewController(viewController, animated: true)
     }
     
     func asyncButtonTapped() {
+        let strategy = AsyncNetworking(networker: networker)
+        let viewController = NetworkingViewController(networkingStrategy: strategy)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }

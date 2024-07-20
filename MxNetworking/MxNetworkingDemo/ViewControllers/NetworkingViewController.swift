@@ -10,7 +10,7 @@ import UIKit
 
 class NetworkingViewController: UIViewController {
 
-    private let networker: MxNetworker
+    private let networkingStrategy: NetworkingStrategy
     
     private lazy var networkingView: NetworkingView = {
         let view = NetworkingView()
@@ -23,8 +23,8 @@ class NetworkingViewController: UIViewController {
         view = networkingView
     }
 
-    init(networker: MxNetworker) {
-        self.networker = networker
+    init(networkingStrategy: NetworkingStrategy) {
+        self.networkingStrategy = networkingStrategy
         super.init(nibName: nil, bundle: nil)
         title = "Closure Networking"
     }
@@ -37,7 +37,7 @@ class NetworkingViewController: UIViewController {
 }
 
 extension NetworkingViewController: NetworkingViewDelegate {
-    func handleExecuteButtonTap() {
+    func handleExecuteButtonTap(method: String) {
         networkingView.model = NetworkingViewModel(state: .loading)
     }
 

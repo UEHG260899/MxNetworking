@@ -8,7 +8,7 @@
 import SwiftUI
 
 protocol NetworkingViewDelegate: AnyObject {
-    func handleExecuteButtonTap()
+    func handleExecuteButtonTap(method: String)
 }
 
 class NetworkingView: UIView {
@@ -155,12 +155,14 @@ class NetworkingView: UIView {
     }
 
     @objc private func onExecuteTapped() {
-        delegate?.handleExecuteButtonTap()
+        let selectedIndex = httpMethodPicker.selectedRow(inComponent: 0)
+        delegate?.handleExecuteButtonTap(method: httpMethods[selectedIndex])
     }
 
     private func configure(with model: NetworkingViewModel) {
         responseStackView.isHidden = model.state == .loading || model.state == .none
         model.state == .loading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+        executeButton.isEnabled = model.state != .loading
         statusLabel.text = model.responseStatusLabel
     }
 }
