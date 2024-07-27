@@ -75,6 +75,8 @@ class NetworkingView: UIView {
 
     private let responseTextView: UITextView = {
         let textView = UITextView()
+        textView.textContainer.lineFragmentPadding = 0
+        textView.textContainerInset = .zero
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.isEditable = false
         return textView
@@ -164,6 +166,7 @@ class NetworkingView: UIView {
         model.state == .loading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
         executeButton.isEnabled = model.state != .loading
         statusLabel.text = model.responseStatusLabel
+        responseTextView.text = model.responseText
     }
 }
 
