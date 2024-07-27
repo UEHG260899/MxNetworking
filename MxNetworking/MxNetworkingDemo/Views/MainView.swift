@@ -1,5 +1,5 @@
 //
-//  DemoView.swift
+//  MainView.swift
 //  MxNetworking_Example
 //
 //  Created by Uriel Hernandez Gonzalez on 06/04/23.
@@ -8,15 +8,22 @@
 
 import UIKit
 
-class DemoView: UIView {
+protocol MainViewDelegate: AnyObject {
+    func closureButtonTapped()
+    func asyncButtonTapped()
+}
+
+class MainView: UIView {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 34, weight: .semibold)
+        label.font = .systemFont(ofSize: 20, weight: .regular)
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Select a method to perform the request"
+        label.text = """
+            MxNetworking is capable of making network request both with closures and async/await, select an option bellow to continue
+        """
         return label
     }()
     
@@ -29,38 +36,22 @@ class DemoView: UIView {
     }()
     
     
-    lazy var closureFetchButton: UIButton = {
+    lazy var closureBasedNetworkingButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Closure Fetch", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .green
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Closure based Networking", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 12
         return button
     }()
     
-    lazy var closurePostButton: UIButton = {
+    lazy var asyncBasedNetworkingButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Closure Post", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .green
-        button.layer.cornerRadius = 12
-        return button
-    }()
-    
-    lazy var asyncFetchButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Async Fetch", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .green
-        button.layer.cornerRadius = 12
-        return button
-    }()
-    
-    lazy var asyncPostButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Async Post", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .green
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Async based Networking", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 12
         return button
     }()
@@ -68,20 +59,31 @@ class DemoView: UIView {
     lazy var footNoteLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 13, weight: .regular)
         label.text = "Fetch requests are made to PokeApi and Post requests are made to a dummy api"
         label.numberOfLines = 0
         label.textAlignment = .center
         return label
     }()
-    
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
-        stackView.addArrangedSubview(closureFetchButton)
-        stackView.addArrangedSubview(closurePostButton)
-        stackView.addArrangedSubview(asyncFetchButton)
-        stackView.addArrangedSubview(asyncPostButton)
 
+    weak var delegate: MainViewDelegate?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupUI()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupUI() {
+        backgroundColor = .white
+        stackView.addArrangedSubview(closureBasedNetworkingButton)
+        stackView.addArrangedSubview(asyncBasedNetworkingButton)
+        
         addSubview(titleLabel)
         addSubview(stackView)
         addSubview(footNoteLabel)
@@ -101,9 +103,25 @@ class DemoView: UIView {
 
         NSLayoutConstraint.activate([
             footNoteLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            footNoteLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            footNoteLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
             footNoteLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             footNoteLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
         ])
+
+        NSLayoutConstraint.activate([
+            closureBasedNetworkingButton.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.12),
+            asyncBasedNetworkingButton.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.12)
+        ])
+    
+        closureBasedNetworkingButton.addTarget(self, action: #selector(closureButtonSelected), for: .touchUpInside)
+        asyncBasedNetworkingButton.addTarget(self, action: #selector(asyncButtonSelected), for: .touchUpInside)
+    }
+
+    @objc private func closureButtonSelected() {
+        delegate?.closureButtonTapped()
+    }
+
+    @objc private func asyncButtonSelected() {
+        delegate?.asyncButtonTapped()
     }
 }
