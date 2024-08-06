@@ -22,7 +22,7 @@ public extension MxNetworker {
         completion: @escaping (Result<Void, APIError>) -> Void
     ) {
         var request = URLRequest(url: endpoint.url)
-        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpMethod = HTTPMethod.POST.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
 
         if let headers {
@@ -45,7 +45,7 @@ public extension MxNetworker {
         completion: @escaping (Result<Void, APIError>) -> Void
     ) {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpMethod = HTTPMethod.POST.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
 
         if let headers {
@@ -92,7 +92,7 @@ public extension MxNetworker {
     ///   - headers:  Headers for the request, nil by default
     func post(endpoint: EndpointType, body: Encodable, headers: [String: String]? = nil) async throws {
         var request = URLRequest(url: endpoint.url)
-        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpMethod = HTTPMethod.POST.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
 
         if let headers {
@@ -117,7 +117,7 @@ public extension MxNetworker {
     ///   - headers: Headers for the request, nil by default
     func post(url: URL, body: Encodable, headers: [String: String]? = nil) async throws {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.post.rawValue
+        request.httpMethod = HTTPMethod.POST.rawValue
         request.httpBody = try? JSONEncoder().encode(body)
 
         if let headers {
