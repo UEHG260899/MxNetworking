@@ -20,5 +20,7 @@ public enum APIError: Error, Equatable {
     case requestFailed(errorCode: Int)
     /// Used when the deserialization of a certain type fails
     case failedDeserialization(type: String)
+    /// Used when an **URLRequest** couldn´t be formed by the data in **Request**
+    case invalidRequest
 }
 
