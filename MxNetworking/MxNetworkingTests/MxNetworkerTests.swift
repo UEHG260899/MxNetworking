@@ -59,7 +59,7 @@ final class MxNetworkerTests: XCTestCase {
         return Product(id: nil, title: "", price: 0, description: "", image: "", category: "")
     }
 
-    private func givenRequest(method: HTTPMethod = .get, body: Encodable? = nil, headers: [String: String]? = nil) -> URLRequest {
+    private func givenRequest(method: HTTPMethod = .GET, body: Encodable? = nil, headers: [String: String]? = nil) -> URLRequest {
         var request = URLRequest(url: mockURL)
         request.httpMethod = method.rawValue
 
@@ -145,7 +145,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         XCTAssertEqual(mockSession.receivedRequest?.url, mockURL)
-        XCTAssertEqual(mockSession.receivedRequest?.httpMethod, HTTPMethod.get.rawValue.uppercased())
+        XCTAssertEqual(mockSession.receivedRequest?.httpMethod, HTTPMethod.GET.rawValue.uppercased())
     }
 
     func test_closureFetchFunction_withEndpoint_completesWithError_whenResponseReturnsError() {
@@ -257,7 +257,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         XCTAssertEqual(mockSession.receivedRequest?.url, mockURL)
-        XCTAssertEqual(mockSession.receivedRequest?.httpMethod, HTTPMethod.get.rawValue.uppercased())
+        XCTAssertEqual(mockSession.receivedRequest?.httpMethod, HTTPMethod.GET.rawValue.uppercased())
     }
 
     func test_closureFetchFunction_withURL_completesWithError_whenResponseReturnsError() {
@@ -539,7 +539,7 @@ final class MxNetworkerTests: XCTestCase {
     func test_closurePost_withEndpoint_sendsCorrectRequest_toSession() {
         // given
         let testProduct = givenTestProduct()
-        let request = givenRequest(method: .post, body: testProduct)
+        let request = givenRequest(method: .POST, body: testProduct)
 
         // when
         sut.post(endpoint: PokeApiEndpoint.pokemonList(limit: 100), body: testProduct, completion: {_ in})
@@ -638,7 +638,7 @@ final class MxNetworkerTests: XCTestCase {
     func test_closurePost_withURL_sendsCorrectRequest_toSession() {
         // given
         let testProduct = givenTestProduct()
-        let request = givenRequest(method: .post, body: testProduct)
+        let request = givenRequest(method: .POST, body: testProduct)
 
         // when
         sut.post(url: mockURL, body: testProduct, completion: {_ in })
@@ -735,7 +735,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asyncPost_withEndpoint_sendCorrectRequest_toSession() async {
         // given
-        let request = givenRequest(method: .post, body: givenTestProduct())
+        let request = givenRequest(method: .POST, body: givenTestProduct())
 
         // when
         do {
@@ -821,7 +821,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asyncPost_withURL_sendsCorrectRequest_toSession() async {
         // given
-        let request = givenRequest(method: .post, body: givenTestProduct())
+        let request = givenRequest(method: .POST, body: givenTestProduct())
 
         // when
         do {

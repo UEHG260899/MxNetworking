@@ -23,7 +23,7 @@ public class MxNetworker {
     ///   - completion: Completion handler
     public func fetch<T: Decodable>(endpoint: EndpointType, decodingType: T.Type, completion: @escaping (Result<T, APIError>) -> Void) {
         var request = URLRequest(url: endpoint.url)
-        request.httpMethod = HTTPMethod.get.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
 
         startFetchRequest(request: request, decodingType: decodingType, completion: completion)
     }
@@ -35,7 +35,7 @@ public class MxNetworker {
     ///   - completion: Completion handler
     public func fetch<T: Decodable>(url: URL, decodingType: T.Type, completion: @escaping (Result<T, APIError>) -> Void) {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.get.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
         
         startFetchRequest(request: request, decodingType: decodingType, completion: completion)
     }
@@ -90,7 +90,7 @@ public class MxNetworker {
     /// - Returns: An object of the decoding type
     public func fetch<T: Decodable>(endpoint: EndpointType, decodingType: T.Type) async throws -> T {
         var request = URLRequest(url: endpoint.url)
-        request.httpMethod = HTTPMethod.get.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
         
         return try await startAsyncFetchRequest(request, decodingType: decodingType)
     }
@@ -102,7 +102,7 @@ public class MxNetworker {
     /// - Returns: An object of the decoding type
     public func fetch<T: Decodable>(url: URL, decodingType: T.Type) async throws -> T {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.get.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
 
         return try await startAsyncFetchRequest(request, decodingType: decodingType)
     }
