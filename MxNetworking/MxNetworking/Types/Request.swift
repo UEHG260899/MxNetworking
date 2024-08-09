@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// An HTTP URL request object
 public struct Request {
     
@@ -36,25 +35,14 @@ public struct Request {
     }
     
     func httpRequest() -> URLRequest? {
-        guard let url else {
+        guard let url,
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             return nil
         }
         
-        let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        
-        if let components {
-            return handleRequestCreation(with: components)
-        }
-
-        return nil
-    }
-
-    private func handleRequestCreation(with components: URLComponents) -> URLRequest? {
-        var components = components
         if let params {
             components.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
         }
-        
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = requestMethod.rawValue
@@ -62,8 +50,7 @@ public struct Request {
         if let requestBody, let encodedData = try? JSONEncoder().encode(requestBody) {
             request.httpBody = encodedData
         }
-        
-       
+
         return request
     }
 }
