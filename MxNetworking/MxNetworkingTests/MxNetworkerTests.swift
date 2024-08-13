@@ -884,7 +884,7 @@ final class MxNetworkerTests: XCTestCase {
         }
     }
 
-    func test_asycnPost_withURL_doesntThrow_whenResponseCode_isBetween200And300() async {
+    func test_asyncPost_withURL_doesntThrow_whenResponseCode_isBetween200And300() async {
         // given
         let mockResponse = givenMockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
@@ -895,5 +895,144 @@ final class MxNetworkerTests: XCTestCase {
         } catch {
             XCTFail()
         }
+    }
+
+    func test_dataWithRequest_completesWithInvalidResponse_ifURLRequestCouldNotBeFormed() {
+        // Given
+        let mockRequest = Request(url: "")
+        let expectation = expectation(description: "Should call completion handler")
+        
+        // When
+        sut.data(for: mockRequest) { result in
+            // Then
+            switch result {
+            case .success:
+                XCTFail("Shouldn´t complete with success")
+            case .failure(let failure):
+                XCTAssertEqual(.invalidRequest, failure)
+            }
+            
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 0.1)
+        
+    }
+
+    func test_dataWithRequest_completesWithUnknownError_ifRequestFails() {
+        // Given
+        let request = Request(url: "www.google.com")
+        let expectation = expectation(description: "Should call completion handler")
+        let expectedError = NSError(domain: "com.mxnetworking", code: 10)
+        mockSession.expectedCompletionValues = (nil, nil, expectedError)
+        
+        // When
+        sut.data(for: request) { result in
+            
+            // Then
+            switch result {
+            case .success:
+                XCTFail("Shouldn´t complete with success")
+            case .failure(let failure):
+                XCTAssertEqual(failure, .unknown(description: expectedError.localizedDescription))
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+
+    func test_dataWithRequest_completesWithInvalidResponse_ifResponseCantBeParsedToHTTPOne() {
+        // Given
+        let request = Request(url: "www.google.com")
+        let expectation = expectation(description: "Should call completion handler")
+        let expectedResponse = URLResponse(url: URL(string: "Hola")!,
+                                           mimeType: "application/json",
+                                           expectedContentLength: 5151161,
+                                           textEncodingName: "utf-8")
+        
+        mockSession.expectedCompletionValues = (nil, expectedResponse, nil)
+        
+        // When
+        sut.data(for: request) { result in
+            // Then
+            switch result {
+            case .success:
+                XCTFail("Shouldn´t cmplete with success")
+            case .failure(let failure):
+                XCTAssertEqual(self.getExpectedError(for: expectedResponse), failure)
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+    
+    func test_dataWithRequest_completesWithRequestFailed_ifResponseCodeIsNotInRange() {
+        // Given
+        let request = Request(url: "www.google.com")
+        let expectation = expectation(description: "Should call completion handler")
+        let expectedRespose = givenMockHTTPResponse(code: 400)
+        mockSession.expectedCompletionValues = (nil, expectedRespose, nil)
+        
+        // When
+        sut.data(for: request) { result in
+            // Then
+            switch result {
+            case .success:
+                XCTFail("Shouldn´t complete with success")
+            case .failure(let failure):
+                XCTAssertEqual(self.getExpectedError(for: expectedRespose), failure)
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+
+    func test_dataWithRequest_completesWithUnknownError_ifDataIsNil() {
+        // Given
+        let request = Request(url: "www.google.com")
+        let expectation = expectation(description: "Should call completion handler")
+        let response = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (nil, response, nil)
+        
+        // When
+        sut.data(for: request) { result in
+            // Then
+            switch result {
+            case .success:
+                XCTFail("Shouldn´t complete with success")
+            case let .failure(error):
+                XCTAssertEqual(APIError.unknown(description: "No data recieved"), error)
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
+    }
+
+    func test_dataWithRequest_completesWithData() {
+        // Given
+        let request = Request(url: "www.google.com")
+        let expectation = expectation(description: "Should call completion handler")
+        let response = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (Data(), response, nil)
+        
+        // When
+        sut.data(for: request) { result in
+            // Then
+            if case .failure = result {
+                XCTFail("Shouldn´t complete with failure")
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 0.1)
     }
 }

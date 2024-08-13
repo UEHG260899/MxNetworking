@@ -125,4 +125,48 @@ public class MxNetworker {
             throw APIError.failedDeserialization(type: String(describing: decodingType))
         }
     }
+
+    public func data(for request: Request, completion: @MainActor @escaping (Result<Data, APIError>) -> Void) {
+        guard let urlRequest = request.httpRequest() else {
+            Task {
+                await completion(.failure(.invalidRequest))
+            }
+            return
+        }
+        
+        session.dataTask(with: urlRequest) { data, response, error in
+            let result: Result<Data, APIError>
+            
+            defer {
+                Task {
+                    await completion(result)
+                }
+            }
+            
+            
+            if let error {
+                result = .failure(.unknown(description: error.localizedDescription))
+                return
+            }
+            
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                result = .failure(.invalidResponse(response: response))
+                return
+            }
+
+            guard (200...300) ~= httpResponse.statusCode else {
+                result = .failure(.requestFailed(errorCode: httpResponse.statusCode))
+                return
+            }
+            
+            guard let data else {
+                result = .failure(.unknown(description: "No data recieved"))
+                return
+            }
+            
+            result = .success(data)
+            
+        }.resume()
+    }
 }
