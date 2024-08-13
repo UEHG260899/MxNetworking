@@ -126,6 +126,12 @@ public class MxNetworker {
         }
     }
 
+    
+    /// Executes a network request and completes with `Data` in order to perform custom decodings
+    /// or any other custom logic with it
+    /// - Parameters:
+    ///   - request: Object containing the request information
+    ///   - completion: Handler to be called once the request completes
     public func data(for request: Request, completion: @MainActor @escaping (Result<Data, APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
@@ -168,5 +174,19 @@ public class MxNetworker {
             result = .success(data)
             
         }.resume()
+    }
+
+    public func data(for request: Request) async throws -> Data {
+        guard let urlRequest = request.httpRequest() else {
+            throw APIError.invalidRequest
+        }
+
+        let (_, response) = try await session.data(for: urlRequest)
+        
+        guard let _ = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+        
+        return .init()
     }
 }

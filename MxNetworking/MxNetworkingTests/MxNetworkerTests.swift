@@ -1035,4 +1035,43 @@ final class MxNetworkerTests: XCTestCase {
         
         wait(for: [expectation], timeout: 0.1)
     }
+
+    func test_asyncDataWithRequest_throwsInvalidRequest_ifURLRequestCouldNotBeFormed() async {
+        // Given
+        let request = Request(url: "")
+        
+        // When
+        do {
+            _ = try await sut.data(for: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should have thrown APIError")
+                return
+            }
+            
+            // Then
+            XCTAssertEqual(apiError, .invalidRequest)
+        }
+    }
+
+    func test_asyncDataWithRequest_throwsInvalidResponse_ifResponseCanNotBeCastedToHTTPResponse() async {
+        // Given
+        let request = Request(url: "www.google.com")
+        let badResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
+        mockSession.expectedCompletionValues = (nil, badResponse, nil)
+        
+        // When
+        do {
+            _ = try await sut.data(for: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should have thrown APIError")
+                return
+            }
+            
+            XCTAssertEqual(getExpectedError(for: badResponse), apiError)
+        }
+    }
 }
