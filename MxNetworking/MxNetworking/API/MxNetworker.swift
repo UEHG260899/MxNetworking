@@ -135,20 +135,37 @@ public class MxNetworker {
         }
         
         session.dataTask(with: urlRequest) { data, response, error in
-            if let error {
+            let result: Result<Data, APIError>
+            
+            defer {
                 Task {
-                    await completion(.failure(.unknown(description: error.localizedDescription)))
+                    await completion(result)
                 }
+            }
+            
+            
+            if let error {
+                result = .failure(.unknown(description: error.localizedDescription))
                 return
             }
             
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                Task {
-                    await completion(.failure(.invalidResponse(response: response)))
-                }
+                result = .failure(.invalidResponse(response: response))
                 return
             }
+
+            guard (200...300) ~= httpResponse.statusCode else {
+                result = .failure(.requestFailed(errorCode: httpResponse.statusCode))
+                return
+            }
+            
+            guard let data else {
+                result = .failure(.unknown(description: "No data recieved"))
+                return
+            }
+            
+            result = .success(data)
             
         }.resume()
     }
