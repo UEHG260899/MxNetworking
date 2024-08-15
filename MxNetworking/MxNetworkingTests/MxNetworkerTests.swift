@@ -1074,4 +1074,35 @@ final class MxNetworkerTests: XCTestCase {
             XCTAssertEqual(getExpectedError(for: badResponse), apiError)
         }
     }
+
+    func test_asyncDataWithRequest_throwsRequestFailed_ifResponseCodeIsNotInRange() async {
+        // Given
+        let request = Request(url: "www.google.com")
+        let badResponse = givenMockHTTPResponse(code: 400)
+        mockSession.expectedCompletionValues = (nil, badResponse, nil)
+        
+        // When
+        do {
+            _ = try await sut.data(for: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should have thrown APIError")
+                return
+            }
+            
+            XCTAssertEqual(getExpectedError(for: badResponse), apiError)
+        }
+    }
+
+    func test_asyncDataWithRequest_completesWithData() async throws {
+        // Given
+        let request = Request(url: "www.google.com")
+        let response = givenMockHTTPResponse(code: 200)
+        mockSession.expectedCompletionValues = (Data(), response, nil)
+        
+        // When
+        _ = try await sut.data(for: request)
+    }
+
 }

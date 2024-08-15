@@ -149,13 +149,11 @@ public class MxNetworker {
                 }
             }
             
-            
             if let error {
                 result = .failure(.unknown(description: error.localizedDescription))
                 return
             }
-            
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 result = .failure(.invalidResponse(response: response))
                 return
@@ -181,12 +179,16 @@ public class MxNetworker {
             throw APIError.invalidRequest
         }
 
-        let (_, response) = try await session.data(for: urlRequest)
+        let (data, response) = try await session.data(for: urlRequest)
         
-        guard let _ = response as? HTTPURLResponse else {
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse(response: response)
         }
+    
+        guard (200...300) ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
         
-        return .init()
+        return data
     }
 }
