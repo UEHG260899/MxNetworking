@@ -174,6 +174,10 @@ public class MxNetworker {
         }.resume()
     }
 
+    /// Executes a network request and returns with `Data` in order to perform custom decodings
+    /// or any other custom logic with it
+    /// - Parameter request: Object containing the request information
+    /// - Returns: The `Data` received from the request
     public func data(for request: Request) async throws -> Data {
         guard let urlRequest = request.httpRequest() else {
             throw APIError.invalidRequest
