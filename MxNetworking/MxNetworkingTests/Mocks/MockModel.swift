@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct MockModel: Encodable {
+struct MockModel: Codable {
     let property: String
 }
