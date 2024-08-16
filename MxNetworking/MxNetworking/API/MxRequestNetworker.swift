@@ -52,7 +52,7 @@ struct MxRequestNetworker {
             }
             
             guard let data else {
-                result = .failure(.unknown(description: "No data recieved"))
+                result = .failure(.unknown(description: "No data received"))
                 return
             }
             
@@ -82,7 +82,18 @@ struct MxRequestNetworker {
         
         return data
     }
-
+    
+    /// Executes a network request and tries to decode the received data into a given model conforming to `Decodable`
+    ///
+    ///Usage example:
+    /// ```swift
+    ///networker.model(from: request) { (request: Result<YourCustomDecodableType, APIError>) in
+    ///    // Your code here
+    ///}
+    /// ```
+    /// - Parameters:
+    ///   - request: Object containing the request information
+    ///   - completion: Handler to be called once the request completes
     public func model<T: Decodable>(from request: Request, completion: @MainActor @escaping (Result<T,APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
@@ -104,8 +115,28 @@ struct MxRequestNetworker {
                 result = .failure(.unknown(description: error.localizedDescription))
                 return
             }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                result = .failure(.invalidResponse(response: response))
+                return
+            }
+
+            guard (200...300) ~= httpResponse.statusCode else {
+                result = .failure(.requestFailed(errorCode: httpResponse.statusCode))
+                return
+            }
+
+            guard let data else {
+                result = .failure(.unknown(description: "No data received"))
+                return
+            }
             
-            result = .failure(.invalidRequest)
+            do {
+                let model = try JSONDecoder().decode(T.self, from: data)
+                result = .success(model)
+            } catch {
+                result = .failure(.failedDeserialization(type: String(describing: T.self)))
+            }
         }.resume()
     }
 }
