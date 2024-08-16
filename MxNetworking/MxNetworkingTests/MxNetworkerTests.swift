@@ -38,23 +38,6 @@ final class MxNetworkerTests: XCTestCase {
        globalExpectation = expectation(description: description)
     }
 
-    private func getExpectedError(for value: Any) -> APIError {
-        switch value {
-        case let error as Error:
-            return .unknown(description: "\(error)")
-        case let httpResponse as HTTPURLResponse:
-            return .requestFailed(errorCode: httpResponse.statusCode)
-        case let response as URLResponse:
-            return .invalidResponse(response: response)
-        default:
-            return .unknown(description: "No data received")
-        }
-    }
-
-    private func givenMockHTTPResponse(code: Int) -> HTTPURLResponse? {
-        return HTTPURLResponse(url: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!, statusCode: code, httpVersion: nil, headerFields: nil)
-    }
-
     private func givenTestProduct() -> Product {
         return Product(id: nil, title: "", price: 0, description: "", image: "", category: "")
     }
@@ -159,7 +142,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockError), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockError), receivedError)
     }
 
     func test_closureFetchFunction_withEndpoint_completesInvalidResponse_whenResponse_cantBeCastedToHTTPUrlResponse() {
@@ -173,13 +156,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockInvalidResponse), receivedError)
     }
 
     func test_closureFetchFunction_withEndpoint_completesRequestFailed_whenResponseCode_isNotBetween_200and300() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -187,13 +170,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockResponse), receivedError)
     }
 
     func test_closureFetchFunction_withEndpoint_completesUnknown_whenNoData_wasReceived() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -201,13 +184,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: ""), receivedError)
+        XCTAssertEqual(ExpectedError(for: ""), receivedError)
     }
 
     func test_closureFetchFunction_withEndpoint_completesDeserializationFailure_whenDataDoesntCorresponds_toModel() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let badData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (badData, mockResponse, nil)
 
@@ -222,7 +205,7 @@ final class MxNetworkerTests: XCTestCase {
     func test_closureFetchFuncion_withEndpoint_completesWithDecodedData_whenResponseData_matchesModel() {
         // given
         givenExpectation(description: "Should return decoded data")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (validData, mockResponse, nil)
         var fetchedData: Any?
@@ -271,7 +254,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockError), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockError), receivedError)
     }
 
     func test_closureFetchFunction_withURL_completesWithInvalidResponse_whenResponseCantBeParsed_toHTTPResponse() {
@@ -285,13 +268,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: invalidResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: invalidResponse), receivedError)
     }
 
     func test_closureFetchFunction_withURL_completesWithRequestFailed_whenResponseCode_isntBetween200And300() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -299,13 +282,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockResponse), receivedError)
     }
 
     func test_closureFetchFunction_withURL_completesWithUnknown_whenNoDataWasReceived() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -313,13 +296,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: ""), receivedError)
+        XCTAssertEqual(ExpectedError(for: ""), receivedError)
     }
 
     func test_closureFetchFunction_withURL_completesWithFailedDeserialization_whenDataDoesntMatchTheModel() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let badResponseData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (badResponseData, mockResponse, nil)
 
@@ -334,7 +317,7 @@ final class MxNetworkerTests: XCTestCase {
     func test_closureFetchFunction_withURL_completesWithDecodedData_whenDataMatchesTheModel() {
         // given
         givenExpectation(description: "Should receive error")
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let badResponseData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (badResponseData, mockResponse, nil)
         var fetchedData: Any?
@@ -387,13 +370,13 @@ final class MxNetworkerTests: XCTestCase {
             XCTFail()
         } catch {
             // then
-            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockResponse), error as? APIError)
         }
     }
 
     func test_asyncFetch_withEndpoint_throwsRequestFailed_whenResponseCode_isNotBetween200And300() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -402,13 +385,13 @@ final class MxNetworkerTests: XCTestCase {
             XCTFail()
         } catch {
             // then
-            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockResponse), error as? APIError)
         }
     }
 
     func test_asyncFetch_withEndpoint_throwsFailedDeserialization_ifResponseDataDoesntMatchModel() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let wrongData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (wrongData, mockResponse, nil)
 
@@ -424,7 +407,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asyncFetch_withEndpoint_returnsDecodedData_ifResponseDataMatchesmModel() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (validData, mockResponse, nil)
 
@@ -476,13 +459,13 @@ final class MxNetworkerTests: XCTestCase {
             let _ = try await sut.fetch(url: mockURL, decodingType: PokemonList.self)
             XCTFail()
         } catch {
-            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockResponse), error as? APIError)
         }
     }
 
     func test_asyncFetch_withURL_throwsRequestFialed_wheRequesCode_isntBetween200And300() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -490,13 +473,13 @@ final class MxNetworkerTests: XCTestCase {
             let _ = try await sut.fetch(url: mockURL, decodingType: PokemonList.self)
             XCTFail()
         } catch {
-            XCTAssertEqual(getExpectedError(for: mockResponse), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockResponse), error as? APIError)
         }
     }
 
     func test_asyncFetch_withURL_throwsFailedDeserialization_ifResponseDataDoesntMatchModel() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let incorrectData = Bundle.getDataFromFile("bad_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (incorrectData, mockResponse, nil)
 
@@ -511,7 +494,7 @@ final class MxNetworkerTests: XCTestCase {
 
     func test_asyncFetch_withURL_returnsDecodedData_ifResponseDataMatchesModel() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (validData, mockResponse, nil)
 
@@ -577,7 +560,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: error), receivedError)
+        XCTAssertEqual(ExpectedError(for: error), receivedError)
     }
 
     func test_closurePost_completesWithInvalidResponse_whenResponceCantBeCasted_intoHTTPURLResponse() {
@@ -591,13 +574,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockInvalidResponse), receivedError)
     }
 
     func test_closurePost_withEndpoint_completesWithRequestFailed_whenResponseCode_isntBetween200And300() {
         // given
         givenExpectation(description: "Should complete with error")
-        let response = givenMockHTTPResponse(code: 404)
+        let response = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, response, nil)
 
         // when
@@ -605,13 +588,13 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: response), receivedError)
+        XCTAssertEqual(ExpectedError(for: response), receivedError)
     }
 
     func test_closurePost_withEndpoint_completesWithSuccess_whenResponseCode_isBetween200And300() {
         // given
         givenExpectation(description: "Should complete with no errors")
-        let response = givenMockHTTPResponse(code: 200)
+        let response = MockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, response, nil)
 
         // when
@@ -674,7 +657,7 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockError), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockError), receivedError)
     }
 
     func test_closurePost_withURL_completesWithInvalidResponse_whenResponseCantBeCasted_toHTTPURLResponse() {
@@ -688,12 +671,12 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockInvalidResponse), receivedError)
     }
 
     func test_closurePost_withURL_completesWithRequestFailed_ifResponseCode_isNotBetween200And300() {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         givenExpectation(description: "Should complete with requestFailed")
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
@@ -702,12 +685,12 @@ final class MxNetworkerTests: XCTestCase {
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockResponse), receivedError)
     }
 
     func test_closurePost_withURL_completesWithSuccess_whenResponseCode_isBetween200And300() {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         givenExpectation(description: "Should complete with success")
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
@@ -777,24 +760,24 @@ final class MxNetworkerTests: XCTestCase {
         await whenAsyncPostCompletesWithError()
 
         // then
-        XCTAssertEqual(getExpectedError(for: mockInvalidResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockInvalidResponse), receivedError)
     }
 
     func test_asyncPost_withEndpoint_throwsRequestFailed_whenResponseCode_isntBetween200And300() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 404)
+        let mockResponse = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
         await whenAsyncPostCompletesWithError()
 
         // then
-        XCTAssertEqual(getExpectedError(for: mockResponse), receivedError)
+        XCTAssertEqual(ExpectedError(for: mockResponse), receivedError)
     }
 
     func test_asyncPost_withEndpoint_doesntThrow_whenResponseCode_isBetween200And300() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -865,13 +848,13 @@ final class MxNetworkerTests: XCTestCase {
             XCTFail()
         } catch {
             // then
-            XCTAssertEqual(getExpectedError(for: mockInvalidResponse), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockInvalidResponse), error as? APIError)
         }
     }
 
     func test_asyncPost_withURL_throwsRequestFailed_whenResponseCode_isntBetween200And300() async {
         // given
-        let mockResposne = givenMockHTTPResponse(code: 404)
+        let mockResposne = MockHTTPResponse(code: 404)
         mockSession.expectedCompletionValues = (nil, mockResposne, nil)
 
         // when
@@ -880,13 +863,13 @@ final class MxNetworkerTests: XCTestCase {
             XCTFail()
         } catch {
             // then
-            XCTAssertEqual(getExpectedError(for: mockResposne), error as? APIError)
+            XCTAssertEqual(ExpectedError(for: mockResposne), error as? APIError)
         }
     }
 
     func test_asyncPost_withURL_doesntThrow_whenResponseCode_isBetween200And300() async {
         // given
-        let mockResponse = givenMockHTTPResponse(code: 200)
+        let mockResponse = MockHTTPResponse(code: 200)
         mockSession.expectedCompletionValues = (nil, mockResponse, nil)
 
         // when
@@ -896,213 +879,4 @@ final class MxNetworkerTests: XCTestCase {
             XCTFail()
         }
     }
-
-    func test_dataWithRequest_completesWithInvalidResponse_ifURLRequestCouldNotBeFormed() {
-        // Given
-        let mockRequest = Request(url: "")
-        let expectation = expectation(description: "Should call completion handler")
-        
-        // When
-        sut.data(for: mockRequest) { result in
-            // Then
-            switch result {
-            case .success:
-                XCTFail("Shouldn´t complete with success")
-            case .failure(let failure):
-                XCTAssertEqual(.invalidRequest, failure)
-            }
-            
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 0.1)
-        
-    }
-
-    func test_dataWithRequest_completesWithUnknownError_ifRequestFails() {
-        // Given
-        let request = Request(url: "www.google.com")
-        let expectation = expectation(description: "Should call completion handler")
-        let expectedError = NSError(domain: "com.mxnetworking", code: 10)
-        mockSession.expectedCompletionValues = (nil, nil, expectedError)
-        
-        // When
-        sut.data(for: request) { result in
-            
-            // Then
-            switch result {
-            case .success:
-                XCTFail("Shouldn´t complete with success")
-            case .failure(let failure):
-                XCTAssertEqual(failure, .unknown(description: expectedError.localizedDescription))
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 0.1)
-    }
-
-    func test_dataWithRequest_completesWithInvalidResponse_ifResponseCantBeParsedToHTTPOne() {
-        // Given
-        let request = Request(url: "www.google.com")
-        let expectation = expectation(description: "Should call completion handler")
-        let expectedResponse = URLResponse(url: URL(string: "Hola")!,
-                                           mimeType: "application/json",
-                                           expectedContentLength: 5151161,
-                                           textEncodingName: "utf-8")
-        
-        mockSession.expectedCompletionValues = (nil, expectedResponse, nil)
-        
-        // When
-        sut.data(for: request) { result in
-            // Then
-            switch result {
-            case .success:
-                XCTFail("Shouldn´t cmplete with success")
-            case .failure(let failure):
-                XCTAssertEqual(self.getExpectedError(for: expectedResponse), failure)
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 0.1)
-    }
-    
-    func test_dataWithRequest_completesWithRequestFailed_ifResponseCodeIsNotInRange() {
-        // Given
-        let request = Request(url: "www.google.com")
-        let expectation = expectation(description: "Should call completion handler")
-        let expectedRespose = givenMockHTTPResponse(code: 400)
-        mockSession.expectedCompletionValues = (nil, expectedRespose, nil)
-        
-        // When
-        sut.data(for: request) { result in
-            // Then
-            switch result {
-            case .success:
-                XCTFail("Shouldn´t complete with success")
-            case .failure(let failure):
-                XCTAssertEqual(self.getExpectedError(for: expectedRespose), failure)
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 0.1)
-    }
-
-    func test_dataWithRequest_completesWithUnknownError_ifDataIsNil() {
-        // Given
-        let request = Request(url: "www.google.com")
-        let expectation = expectation(description: "Should call completion handler")
-        let response = givenMockHTTPResponse(code: 200)
-        mockSession.expectedCompletionValues = (nil, response, nil)
-        
-        // When
-        sut.data(for: request) { result in
-            // Then
-            switch result {
-            case .success:
-                XCTFail("Shouldn´t complete with success")
-            case let .failure(error):
-                XCTAssertEqual(APIError.unknown(description: "No data recieved"), error)
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 0.1)
-    }
-
-    func test_dataWithRequest_completesWithData() {
-        // Given
-        let request = Request(url: "www.google.com")
-        let expectation = expectation(description: "Should call completion handler")
-        let response = givenMockHTTPResponse(code: 200)
-        mockSession.expectedCompletionValues = (Data(), response, nil)
-        
-        // When
-        sut.data(for: request) { result in
-            // Then
-            if case .failure = result {
-                XCTFail("Shouldn´t complete with failure")
-            }
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 0.1)
-    }
-
-    func test_asyncDataWithRequest_throwsInvalidRequest_ifURLRequestCouldNotBeFormed() async {
-        // Given
-        let request = Request(url: "")
-        
-        // When
-        do {
-            _ = try await sut.data(for: request)
-            XCTFail("Shouldn´t complete with success")
-        } catch {
-            guard let apiError = error as? APIError else {
-                XCTFail("Should have thrown APIError")
-                return
-            }
-            
-            // Then
-            XCTAssertEqual(apiError, .invalidRequest)
-        }
-    }
-
-    func test_asyncDataWithRequest_throwsInvalidResponse_ifResponseCanNotBeCastedToHTTPResponse() async {
-        // Given
-        let request = Request(url: "www.google.com")
-        let badResponse = URLResponse(url: URL(string: "Hola")!, mimeType: "application/json", expectedContentLength: 5151161, textEncodingName: "utf-8")
-        mockSession.expectedCompletionValues = (nil, badResponse, nil)
-        
-        // When
-        do {
-            _ = try await sut.data(for: request)
-            XCTFail("Shouldn´t complete with success")
-        } catch {
-            guard let apiError = error as? APIError else {
-                XCTFail("Should have thrown APIError")
-                return
-            }
-            
-            XCTAssertEqual(getExpectedError(for: badResponse), apiError)
-        }
-    }
-
-    func test_asyncDataWithRequest_throwsRequestFailed_ifResponseCodeIsNotInRange() async {
-        // Given
-        let request = Request(url: "www.google.com")
-        let badResponse = givenMockHTTPResponse(code: 400)
-        mockSession.expectedCompletionValues = (nil, badResponse, nil)
-        
-        // When
-        do {
-            _ = try await sut.data(for: request)
-            XCTFail("Shouldn´t complete with success")
-        } catch {
-            guard let apiError = error as? APIError else {
-                XCTFail("Should have thrown APIError")
-                return
-            }
-            
-            XCTAssertEqual(getExpectedError(for: badResponse), apiError)
-        }
-    }
-
-    func test_asyncDataWithRequest_completesWithData() async throws {
-        // Given
-        let request = Request(url: "www.google.com")
-        let response = givenMockHTTPResponse(code: 200)
-        mockSession.expectedCompletionValues = (Data(), response, nil)
-        
-        // When
-        _ = try await sut.data(for: request)
-    }
-
 }
