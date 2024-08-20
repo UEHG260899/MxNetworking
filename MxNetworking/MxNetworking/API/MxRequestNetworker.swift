@@ -139,4 +139,26 @@ struct MxRequestNetworker {
             }
         }.resume()
     }
+
+    public func model<T: Decodable>(from request: Request) async throws -> T {
+        guard let httpRequest = request.httpRequest() else {
+            throw APIError.invalidRequest
+        }
+        
+        let (data, response) = try await session.data(for: httpRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse(response: response)
+        }
+        
+        guard (200...300) ~= httpResponse.statusCode else {
+            throw APIError.requestFailed(errorCode: httpResponse.statusCode)
+        }
+        
+        guard let model = try? JSONDecoder().decode(T.self, from: data) else {
+            throw APIError.failedDeserialization(type: String(describing: T.self))
+        }
+        
+        return model
+    }
 }
