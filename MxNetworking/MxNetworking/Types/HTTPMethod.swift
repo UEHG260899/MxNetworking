@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// HTTP methods to be used by MxNetworking
 public enum HTTPMethod: String {
     case GET
     case POST
