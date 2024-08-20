@@ -6,6 +6,7 @@ options:
     deploymentTarget:
         iOS: "13.0"
     useTabs: false
+    postGenCommand: open MxNetworking.xcodeproj
 
 settings:
     base:

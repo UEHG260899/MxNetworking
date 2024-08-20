@@ -394,4 +394,75 @@ final class MxRequestNetworkerTests: XCTestCase {
         wait(for: [expectation], timeout: 0.1)
     }
 
+    func test_asyncModel_withRequest_throwsFailedRequest_whenURLRequestCantBeFormed() async {
+        // Given
+        let request = Request(url: "")
+        
+        // When
+        do {
+            let _: MockModel = try await sut.model(from: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should throw APIError")
+                return
+            }
+            
+            XCTAssertEqual(apiError, .invalidRequest)
+        }
+    }
+
+    func test_asyncModel_withRequest_throwsInvalidResponse_whenResponseCanNotBeCasted() async {
+        // Given
+        let request = Request(url: "www.google.con")
+        let badResponse = URLResponse(url: URL(string: "Hola")!,
+                                      mimeType: "application/json",
+                                      expectedContentLength: 5151161,
+                                      textEncodingName: "utf-8")
+        mockSession.expectedCompletionValues = (nil, badResponse, nil)
+
+        // When
+        do {
+            let _: MockModel = try await sut.model(from: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should throw APIError")
+                return
+            }
+            // Then
+            XCTAssertEqual(ExpectedError(for: badResponse),  apiError)
+        }
+    }
+
+    func test_asyncModel_throwsRequestFailed_whenHTTPStatusCodeIsNotInRange() async {
+        // Given
+        let request = Request(url: "www.google.con")
+        let badResponse = MockHTTPResponse(code: 500)
+        mockSession.expectedCompletionValues = (nil, badResponse, nil)
+
+        // When
+        do {
+            let _: MockModel = try await sut.model(from: request)
+            XCTFail("Shouldn´t complete with success")
+        } catch {
+            guard let apiError = error as? APIError else {
+                XCTFail("Should throw APIError")
+                return
+            }
+            
+            // Then
+            XCTAssertEqual(ExpectedError(for: badResponse), apiError)
+        }
+    }
+
+    func test_asyncModel_throwsDeserializationError_whenDeserializationFails() async throws {
+        // Given
+        let request = Request(url: "www.google.com")
+        let encodedData = try? JSONEncoder().encode(MockModel(property: "Hello"))
+        mockSession.expectedCompletionValues = (encodedData, MockHTTPResponse(code: 200), nil)
+
+        // Then
+        let model: MockModel = try await sut.model(from: request)
+    }
 }
