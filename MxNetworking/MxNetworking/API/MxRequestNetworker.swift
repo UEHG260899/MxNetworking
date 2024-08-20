@@ -7,10 +7,14 @@
 
 import Foundation
 
-struct MxRequestNetworker {
+/// Network client provided by MxNetworking
+public struct MxRequestNetworker {
     private let session: URLSessionProtocol
     
-    init(session: URLSessionProtocol) {
+    /// Creates a network client
+    /// - Parameter session: The `URLSession` object from which network requests will be made.
+    /// `URLSession.shared` by default
+    public init(session: URLSessionProtocol = URLSession.shared) {
         self.session = session
     }
     
@@ -18,7 +22,7 @@ struct MxRequestNetworker {
     /// or any other custom logic with it
     /// - Parameters:
     ///   - request: Object containing the request information
-    ///   - completion: Handler to be called once the request completes
+    ///   - completion: Handler to be called once the request completes. Runs on `MainActor`
     public func data(for request: Request, completion: @MainActor @escaping (Result<Data, APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
@@ -65,6 +69,7 @@ struct MxRequestNetworker {
     /// or any other custom logic with it
     /// - Parameter request: Object containing the request information
     /// - Returns: The `Data` received from the request
+    /// - Throws: ``APIError`` or generic `Error` if `URLSession` throws
     public func data(for request: Request) async throws -> Data {
         guard let urlRequest = request.httpRequest() else {
             throw APIError.invalidRequest
@@ -93,7 +98,7 @@ struct MxRequestNetworker {
     /// ```
     /// - Parameters:
     ///   - request: Object containing the request information
-    ///   - completion: Handler to be called once the request completes
+    ///   - completion: Handler to be called once the request completes. Runs on `MainActor`
     public func model<T: Decodable>(from request: Request, completion: @MainActor @escaping (Result<T,APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
@@ -140,6 +145,22 @@ struct MxRequestNetworker {
         }.resume()
     }
 
+    
+    /// Executes a network request and tries to decode the received `Data` into a given model conforming to `Decodable`
+    /// and returns it
+    ///
+    /// Usage example:
+    /// ```swift
+    ///struct MyModel: Decodable {
+    ///    let title: String
+    ///}
+    ///
+    ///let request = Request(url: "www.example.com")
+    ///let model: MyModel = try await networker.model(from: request)
+    /// ```
+    /// - Parameter request: Object containing the request information
+    /// - Returns: Model decoded form data
+    /// - Throws: ``APIError`` or generic `Error` if `URLSession` throws
     public func model<T: Decodable>(from request: Request) async throws -> T {
         guard let httpRequest = request.httpRequest() else {
             throw APIError.invalidRequest
