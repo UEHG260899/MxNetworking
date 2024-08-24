@@ -8,7 +8,7 @@
 import Foundation
 
 /// Network client provided by MxNetworking
-public struct MxRequestNetworker {
+public struct MxRequestNetworker: Sendable {
     private let session: URLSessionProtocol
     
     /// Creates a network client
@@ -23,7 +23,7 @@ public struct MxRequestNetworker {
     /// - Parameters:
     ///   - request: Object containing the request information
     ///   - completion: Handler to be called once the request completes. Runs on `MainActor`
-    public func data(for request: Request, completion: @MainActor @escaping (Result<Data, APIError>) -> Void) {
+    public func data(for request: Request, completion: @MainActor @Sendable @escaping (Result<Data, APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
                 await completion(.failure(.invalidRequest))
@@ -99,7 +99,7 @@ public struct MxRequestNetworker {
     /// - Parameters:
     ///   - request: Object containing the request information
     ///   - completion: Handler to be called once the request completes. Runs on `MainActor`
-    public func model<T: Decodable>(from request: Request, completion: @MainActor @escaping (Result<T,APIError>) -> Void) {
+    public func model<T: Decodable & Sendable>(from request: Request, completion: @MainActor @Sendable @escaping (Result<T,APIError>) -> Void) {
         guard let urlRequest = request.httpRequest() else {
             Task {
                 await completion(.failure(.invalidRequest))

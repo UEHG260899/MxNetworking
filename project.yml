@@ -35,6 +35,7 @@ targets:
             SUPPORTS_MACCATALYST: false
             SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
             INFOPLIST_FILE: MxNetworking/Info.plist
+            SWIFT_STRICT_CONCURRENCY: complete
         platform: iOS
         type: framework
         sources:
