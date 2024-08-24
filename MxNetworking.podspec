@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MxNetworking'
-  s.version          = '2.0.0'
+  s.version          = '2.1.0'
   s.summary          = 'Basic networking pod'
 
 # This description is used to generate tags and improve search results.
@@ -31,7 +31,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 
-  s.source_files = 'Networking/**/*.swift'
+  s.source_files = 'MxNetworking/MxNetworking/**/*.swift'
+  s.resources = 'MxNetworking/MxNetworking/**/*.xcassets'
   
   # s.resource_bundles = {
   #   'MxNetworking' => ['MxNetworking/Assets/*.png']

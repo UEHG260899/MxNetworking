@@ -1,0 +1,65 @@
+name: MxNetworking
+
+options:
+    bundleIdPrefix: com.urielh
+    xcodeVersion: 15.4
+    deploymentTarget:
+        iOS: "13.0"
+    useTabs: false
+    postGenCommand: open MxNetworking.xcodeproj
+
+settings:
+    base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 5P4JJDT7CR
+        MARKETING_VERSION: "2.1.0"
+        BUNDLE_VERSION: "1"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: 5.0
+
+targets:
+    MxNetworkingDemo:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+        platform: iOS
+        type: application
+        sources: 
+            - MxNetworking/MxNetworkingDemo
+        dependencies:
+            - target: MxNetworking
+    MxNetworking:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+            INFOPLIST_FILE: MxNetworking/Info.plist
+            SWIFT_STRICT_CONCURRENCY: complete
+        platform: iOS
+        type: framework
+        sources:
+            - MxNetworking/MxNetworking
+    MxNetworkingTests:
+        settings:
+            TARGETED_DEVICE_FAMILY: 1
+            SUPPORTS_MACCATALYST: false
+            SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
+        platform: iOS
+        type: bundle.unit-test 
+        dependencies:
+            - target: MxNetworkingDemo
+        sources:
+            - MxNetworking/MxNetworkingTests
+
+schemes:
+    MxNetworkingDemo:
+        build:
+            targets:
+                MxNetworkingDemo: build
+        test:
+            gatherCoverageData: true
+            targets:
+                - name: MxNetworkingTests
+            coverageTargets:
+                - MxNetworking     
