@@ -11,6 +11,7 @@ public protocol EndpointType {
     var url: URL { get }
 }
 
+/// Errors thrown by MxNetworking
 public enum APIError: Error, Equatable {
     /// Used when the network request returns an undisclosed error
     case unknown(description: String)
@@ -20,7 +21,7 @@ public enum APIError: Error, Equatable {
     case requestFailed(errorCode: Int)
     /// Used when the deserialization of a certain type fails
     case failedDeserialization(type: String)
-    /// Used when an **URLRequest** couldn´t be formed by the data in **Request**
+    /// Used when an `URLRequest` couldn´t be formed by the data in **Request**
     case invalidRequest
 }
 
