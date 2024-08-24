@@ -2,7 +2,7 @@ name: MxNetworking
 
 options:
     bundleIdPrefix: com.urielh
-    xcodeVersion: 15.0.1
+    xcodeVersion: 15.4
     deploymentTarget:
         iOS: "13.0"
     useTabs: false
@@ -12,7 +12,7 @@ settings:
     base:
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 5P4JJDT7CR
-        MARKETING_VERSION: "2.0.0"
+        MARKETING_VERSION: "2.1.0"
         BUNDLE_VERSION: "1"
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: 5.0
