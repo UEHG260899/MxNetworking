@@ -208,19 +208,19 @@ final class MxNetworkerTests: XCTestCase {
         let mockResponse = MockHTTPResponse(code: 200)
         let validData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (validData, mockResponse, nil)
-        var fetchedData: Any?
+        
 
         // when
         sut.fetch(endpoint: PokeApiEndpoint.pokemonList(limit: 100), decodingType: PokemonList.self) { [weak self] result in
-            if case .success(let pokemonData) = result {
-                fetchedData = pokemonData
-                self?.globalExpectation.fulfill()
+            if case .failure = result {
+                XCTFail("Shouldn´t complete with error")
             }
+            
+            self?.globalExpectation.fulfill()
         }
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertTrue((fetchedData as AnyObject) is PokemonList)
     }
 
     func test_closureFetchFunction_withURL_callsDataTaskMethod_onSession() {
@@ -320,19 +320,18 @@ final class MxNetworkerTests: XCTestCase {
         let mockResponse = MockHTTPResponse(code: 200)
         let badResponseData = Bundle.getDataFromFile("correct_pokemon_response", type: "json")
         mockSession.expectedCompletionValues = (badResponseData, mockResponse, nil)
-        var fetchedData: Any?
 
         // when
         sut.fetch(url: mockURL, decodingType: PokemonList.self) { [weak self] result in
-            if case .success(let pokemonData) = result {
-                fetchedData = pokemonData
-                self?.globalExpectation.fulfill()
+            if case .failure = result {
+                XCTFail("Shouldn´t complete with failure")
             }
+            
+            self?.globalExpectation.fulfill()
         }
 
         // then
         waitForExpectations(timeout: 0.1)
-        XCTAssertTrue((fetchedData as AnyObject) is PokemonList)
     }
 
     // MARK: - Async fetch with Endpoint

@@ -463,6 +463,6 @@ final class MxRequestNetworkerTests: XCTestCase {
         mockSession.expectedCompletionValues = (encodedData, MockHTTPResponse(code: 200), nil)
 
         // Then
-        let model: MockModel = try await sut.model(from: request)
+        let _: MockModel = try await sut.model(from: request)
     }
 }

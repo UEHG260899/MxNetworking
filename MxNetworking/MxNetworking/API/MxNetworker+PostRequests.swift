@@ -19,7 +19,7 @@ public extension MxNetworker {
         endpoint: EndpointType,
         body: Encodable,
         headers: [String: String]? = nil,
-        completion: @escaping (Result<Void, APIError>) -> Void
+        completion: @Sendable @escaping (Result<Void, APIError>) -> Void
     ) {
         var request = URLRequest(url: endpoint.url)
         request.httpMethod = HTTPMethod.POST.rawValue
@@ -42,7 +42,7 @@ public extension MxNetworker {
         url: URL,
         body: Encodable,
         headers: [String: String]? = nil,
-        completion: @escaping (Result<Void, APIError>) -> Void
+        completion: @Sendable @escaping (Result<Void, APIError>) -> Void
     ) {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.POST.rawValue
@@ -55,7 +55,7 @@ public extension MxNetworker {
         startPostRequest(request, completion: completion)
     }
 
-    private func startPostRequest(_ request: URLRequest, completion: @escaping (Result<Void, APIError>) -> Void) {
+    private func startPostRequest(_ request: URLRequest, completion: @Sendable @escaping (Result<Void, APIError>) -> Void) {
         session.dataTask(with: request) { _, response, error in
             if let error {
                 DispatchQueue.main.async {
